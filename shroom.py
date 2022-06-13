@@ -1,6 +1,6 @@
 import player
 import pygame
-import main
+#import main
 
 class Shrooms(object):
     walkLeft = [pygame.image.load("mushroom1.png"), pygame.image.load("mushroom2.png"), pygame.image.load("mushroom1.png"), pygame.image.load("mushroom4.png")]
@@ -20,7 +20,7 @@ class Shrooms(object):
         self.move()
         if self.walkCount + 1 <= 12:      #change 10 dependent on number of sprites = 3*numSprites
             self.walkCount = 0
-        main.screen.blit(self.walkRight[self.walkCount//3], (self.x, self.y))
+        win.blit(self.walkRight[self.walkCount//3], (self.x, self.y))
         self.walkCount += 1
 
     def move(self):    #need to add if collide with a draggo

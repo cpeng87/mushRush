@@ -4,8 +4,10 @@ from pygame.sprite import Sprite
 from pygame.rect import Rect
 from enum import Enum
 from pygame.sprite import RenderUpdates
-import level
+
+import level as l
 import shroom
+import gameState
 
 background_color = (215,224,209)      #change to title screen later
 white = (255, 255, 255)
@@ -13,21 +15,6 @@ titleBg = pygame.image.load('bgPlaceholder.jpg')      #need replace!!!!!!!!!!!
 instructions = pygame.image.load('instructionScreen.png')
 levelField = pygame.image.load('dragonfield.png')
 gameOverScreen = pygame.image.load('gameOverPlaceholder.jpg')
-
-class GameState(Enum):
-    QUIT = -1
-    TITLE = 0
-    NEWGAME = 1
-    NEXT_LEVEL = 2
-    PAUSE = 3
-    INSTRUCTION = 4
-    LEVEL = 5
-    GAME_OVER = 6
-
-def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
-    font = pygame.freetype.SysFont("showcardgothic", font_size, bold=True)
-    surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
-    return surface.convert_alpha()
 
 class UIElement(Sprite):
     def __init__(self, center_position, text, font_size, bg_rgb, text_rgb, action=None):      #like a constructor
@@ -59,6 +46,12 @@ class UIElement(Sprite):
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
+
+def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
+    font = pygame.freetype.SysFont("showcardgothic", font_size, bold=True)
+    surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
+    return surface.convert_alpha()
+
 def title_screen(screen):
     quit_btn = UIElement(       
         center_position=(650, 500),
@@ -66,7 +59,7 @@ def title_screen(screen):
         bg_rgb=background_color,
         text_rgb= white,
         text="Quit",
-        action=GameState.QUIT,
+        action=gameState.GameState.QUIT,
     )
     start_btn = UIElement(
         center_position=(650, 450),
@@ -74,7 +67,7 @@ def title_screen(screen):
         bg_rgb=background_color,
         text_rgb= white,
         text="Start",
-        action=GameState.NEWGAME,
+        action=gameState.GameState.NEWGAME,
     )
     buttons = RenderUpdates(start_btn, quit_btn)
     return game_loop(screen, buttons, titleBg)
@@ -87,7 +80,7 @@ def instruction(screen, player1):
         bg_rgb=background_color,
         text_rgb=white,
         text="Return to menu",
-        action=GameState.TITLE,
+        action=gameState.GameState.TITLE,
     )
 
     continue_btn = UIElement(
@@ -96,43 +89,13 @@ def instruction(screen, player1):
         bg_rgb=background_color,
         text_rgb=white,
         text="Continue",
-        action=GameState.LEVEL
+        action=gameState.GameState.LEVEL
     )
     
     buttons = RenderUpdates(return_btn, continue_btn)
     return game_loop(screen, buttons, instructions)
 
 buttonColor = (200,100,100)
-
-def levelTime(screen, player1):
-    menu_btn = UIElement(
-        center_position= (550, 50),
-        font_size=30,
-        bg_rgb=buttonColor,
-        text_rgb=white,
-        text="Menu",
-        action=GameState.TITLE
-    )
-
-    quit_btn = UIElement(
-        center_position= (700, 50),
-        font_size=30,
-        bg_rgb=buttonColor,
-        text_rgb=white,
-        text="Quit",
-        action=GameState.QUIT
-    )
-
-    nextlevel_btn = UIElement(
-        center_position= (560, 550),
-        font_size = 30,
-        bg_rgb=background_color,
-        text_rgb=white,
-        text="Continue to next level",
-        action=GameState.NEXT_LEVEL
-    )
-    buttons = RenderUpdates(menu_btn, nextlevel_btn, quit_btn)
-    return game_loop(screen, buttons, levelField)
 
 def gameOver(screen, player1):
     menu_btn = UIElement(
@@ -141,7 +104,7 @@ def gameOver(screen, player1):
         bg_rgb=buttonColor,
         text_rgb=white,
         text="Menu",
-        action=GameState.TITLE
+        action=gameState.GameState.TITLE
     )
 
     quit_btn = UIElement(
@@ -150,10 +113,41 @@ def gameOver(screen, player1):
         bg_rgb=buttonColor,
         text_rgb=white,
         text="Quit",
-        action=GameState.QUIT
+        action=gameState.GameState.QUIT
     )
     buttons = RenderUpdates(menu_btn, quit_btn)
     return game_loop(screen, buttons, gameOverScreen)
+        
+def level(screen, player1):
+    menu_btn = menu.UIElement(
+    center_position= (550, 50),
+        font_size=30,
+        bg_rgb=buttonColor,
+        text_rgb=white,
+        text="Menu",
+        action=menu.GameState.TITLE
+    )
+
+    quit_btn = menu.UIElement(
+        center_position= (700, 50),
+        font_size=30,
+        bg_rgb=buttonColor,
+        text_rgb=white,
+        text="Quit",
+        action=menu.GameState.QUIT
+    )
+
+    nextlevel_btn = menu.UIElement(
+        center_position= (560, 550),
+        font_size = 30,
+        bg_rgb=background_color,
+        text_rgb=white,
+        text="Continue to next level",
+        action=menu.GameState.NEXT_LEVEL
+    )
+    buttons = RenderUpdates(menu_btn, nextlevel_btn, quit_btn)
+    return game_loop(screen, buttons, levelField)
+
 
 def game_loop(screen, buttons, bg):
     while True:
@@ -163,7 +157,7 @@ def game_loop(screen, buttons, bg):
                 pygame.quit()
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_up = True
-        screen.blit(bg, (0,0))
+        screen.blit(bg, (0, 0))
 
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
@@ -171,9 +165,7 @@ def game_loop(screen, buttons, bg):
                 return ui_action
 
         buttons.draw(screen)
-        if(GameState.LEVEL):
-            level.listShrooms.draw(screen)
+        #if GameState.LEVEL:
+        #    for shroom in level.listShroom:
+        #        shroom.draw(screen)
         pygame.display.flip()
-
-        
-

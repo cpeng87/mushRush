@@ -2,7 +2,6 @@ import random
 import pygame
 import shroom
 import player
-import menu
 from pygame.sprite import RenderUpdates
 
 r1 = 140      #hold center location of the row
