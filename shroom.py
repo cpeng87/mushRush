@@ -3,7 +3,7 @@ import pygame
 #import main
 
 class Shrooms(object):
-    walkLeft = [pygame.image.load("mushroom1.png"), pygame.image.load("mushroom2.png"), pygame.image.load("mushroom1.png"), pygame.image.load("mushroom4.png")]
+    walkLeft = [pygame.image.load("./images/shroom/mushroom1.png"), pygame.image.load("./images/shroom/mushroom2.png"), pygame.image.load("./images/shroom/mushroom1.png"), pygame.image.load("./images/shroom/mushroom4.png")]
     #to make a shroom = Shrooms(5, 100, 410, 64, 64, 450)
     def __init__(self, hp, x, y, width, height, end):
         self.hp = hp
