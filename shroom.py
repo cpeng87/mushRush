@@ -13,18 +13,22 @@ class Shrooms(object):
         self.height = height
         self.end = end
         self.path = [x, end]
-        self.vel = -3      #moving left
+        self.vel = -2      #moving left
         self.walkCount = 0    #for animation
 
     def draw(self, win):
         self.move()
-        if self.walkCount + 1 <= 12:      #change 10 dependent on number of sprites = 3*numSprites
+        if self.walkCount + 1 >= 28:
             self.walkCount = 0
-        win.blit(self.walkRight[self.walkCount//3], (self.x, self.y))
+        if self.vel != 0:
+            win.blit(self.walkLeft[self.walkCount // 7], (self.x, self.y)) #change 10 dependent on number of sprites = 3*numSprites
+            self.walkCount = self.walkCount + 1
+        else:
+            win.blit(self.walkLeft[0], (self.x, self.y))
         self.walkCount += 1
 
     def move(self):    #need to add if collide with a draggo
-        if self.x - self.vel > self.path[0]:
+        if self.x + self.vel > self.path[1]:
             self.x += self.vel
         else:
             self.vel = 0     #reach end of map, need life decrease

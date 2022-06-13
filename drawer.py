@@ -52,6 +52,7 @@ def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
     surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
     return surface.convert_alpha()
 
+#drawing the screen for each state
 def title_screen(screen):
     quit_btn = UIElement(       
         center_position=(650, 500),
@@ -118,38 +119,40 @@ def gameOver(screen, player1):
     buttons = RenderUpdates(menu_btn, quit_btn)
     return game_loop(screen, buttons, gameOverScreen)
         
-def level(screen, player1):
-    menu_btn = menu.UIElement(
+def level(screen, player1, level):
+    menu_btn = UIElement(
     center_position= (550, 50),
         font_size=30,
         bg_rgb=buttonColor,
         text_rgb=white,
         text="Menu",
-        action=menu.GameState.TITLE
+        action=gameState.GameState.TITLE
     )
 
-    quit_btn = menu.UIElement(
+    quit_btn = UIElement(
         center_position= (700, 50),
         font_size=30,
         bg_rgb=buttonColor,
         text_rgb=white,
         text="Quit",
-        action=menu.GameState.QUIT
+        action=gameState.GameState.QUIT
     )
 
-    nextlevel_btn = menu.UIElement(
+    nextlevel_btn = UIElement(
         center_position= (560, 550),
         font_size = 30,
         bg_rgb=background_color,
         text_rgb=white,
         text="Continue to next level",
-        action=menu.GameState.NEXT_LEVEL
+        action=gameState.GameState.NEXT_LEVEL
     )
     buttons = RenderUpdates(menu_btn, nextlevel_btn, quit_btn)
-    return game_loop(screen, buttons, levelField)
+    return game_loop(screen, buttons, levelField, level=level)
 
 
-def game_loop(screen, buttons, bg):
+# where you do per frame updates to the screen
+# once the UI is ready, this runs whatever is supposed to be drawn and the logic of the state
+def game_loop(screen, buttons, bg, level=None):
     while True:
         mouse_up = False
         for event in pygame.event.get():
@@ -165,7 +168,7 @@ def game_loop(screen, buttons, bg):
                 return ui_action
 
         buttons.draw(screen)
-        #if GameState.LEVEL:
-        #    for shroom in level.listShroom:
-        #        shroom.draw(screen)
+        if level:
+            for shroom in level.listShroom:
+                shroom.draw(screen)
         pygame.display.flip()

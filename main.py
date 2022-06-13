@@ -9,6 +9,13 @@ import shroom
 import drawer
 import gameState as gs
 
+#variables
+levelNum = 1
+time = 60
+mushNum = 20
+
+levels = [Level(levelNum, mushNum, time, 0), Level(levelNum, mushNum, time, 0)]
+currentLevel = levels[0]
 
 pygame.init()
 
@@ -23,29 +30,9 @@ pygame.display.set_caption("guns go pew pew")
 game_state = gs.GameState.TITLE
 running = True
 
-levelNum = 1
-time = 60
-mushNum = 20
-
-levels = [Level(levelNum, mushNum, time, 0), Level(levelNum, mushNum, time, 0)]
-currentLevel = levels[0]
-
-def redrawGameWindow():  # need import screen or say where it from
-    global walkCount
-    walkCount = 0
-
-    screen.blit(bg, (0, 0))
-    if walkCount + 1 >= 12:
-        walkCount = 0
-    if shroom.vel != 0:
-        screen.blit(shroom.walkRight[walkCount // 3], (shroom.x, shroom.y))
-        walkCount = walkCount + 1
-    else:
-        screen.blit(shroom.walkRight[0], shroom.x, shroom.y)
-
-    pygame.display.update()
-
-
+# main game logic loop
+# takes care of the state machine in the game
+# handles the transitions between states and calling the correct drawing method
 while running:
     screen.blit(titleBg, (0, 0))
     if game_state == gs.GameState.TITLE:
@@ -60,10 +47,8 @@ while running:
 
     if game_state == gs.GameState.LEVEL:
         start_ticks = pygame.time.get_ticks()
-        #level1 = level.Level(levelNum, mushNum, time, start_ticks)
-        currentLevel.startTime = start_ticks;
-        game_state = currentLevel.level(screen, player1)
-        redrawGameWindow()
+        currentLevel.startTime = start_ticks
+        game_state = drawer.level(screen, player1, currentLevel)
 
     if game_state == gs.GameState.NEXT_LEVEL:
         levelNum += 1
@@ -71,7 +56,6 @@ while running:
         time += 30
         start_ticks = pygame.time.get_ticks()
         currentLevel = levels[levelNum - 1]
-        #game_state = currentLevel.level(screen, player1)
         game_state = gs.GameState.LEVEL
 
     if game_state == gs.GameState.GAME_OVER:

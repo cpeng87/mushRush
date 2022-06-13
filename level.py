@@ -21,7 +21,7 @@ class Level():
         self.startTime = startTime
         self.completed = False
 
-        self.listShroom = [shroom.Shrooms(5, 800, r1, 77, 54, end)]       #holds all the shrooms
+        self.listShroom = [shroom.Shrooms(5, 600, r1, 64, 64, end)]       #holds all the shrooms
 
     def timerCountdown(self):
         seconds = (pygame.time.get_ticks() - self.startTime)/1000      #calculates how many seconds
