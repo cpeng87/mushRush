@@ -1,28 +1,26 @@
 import pygame
 import pygame.freetype
 from pygame.locals import *
-from enum import Enum
 
 import player
 from level import Level
-import shroom
 import drawer
 import gameState as gs
 
 #variables
 levelNum = 1
-time = 60
+timer = 20        #level time limit in seconds
 mushNum = 20
 
-levels = [Level(levelNum, mushNum, time, 0), Level(levelNum, mushNum, time, 0)]
+levels = [Level(levelNum, mushNum, timer), Level(levelNum, mushNum, timer)]
 currentLevel = levels[0]
 
 pygame.init()
 
 background_color = (215, 224, 209)  # change to title screen later
 white = (255, 255, 255)
-icon = pygame.image.load("shroom.png")
-titleBg = pygame.image.load("bgPlaceholder.jpg")  # need replace 700 x 450
+icon = pygame.image.load("./images/shroomIcon.png")
+titleBg = pygame.image.load("./images/bgs/bgPlaceholder.jpg")  # need replace 700 x 450
 pygame.display.set_icon(icon)
 
 screen = pygame.display.set_mode((800, 600))  # pix size of screen length x height
@@ -46,15 +44,12 @@ while running:
         game_state = drawer.instruction(screen, player1)
 
     if game_state == gs.GameState.LEVEL:
-        start_ticks = pygame.time.get_ticks()
-        currentLevel.startTime = start_ticks
         game_state = drawer.level(screen, player1, currentLevel)
 
     if game_state == gs.GameState.NEXT_LEVEL:
         levelNum += 1
         mushNum += 20
-        time += 30
-        start_ticks = pygame.time.get_ticks()
+        timer += 30
         currentLevel = levels[levelNum - 1]
         game_state = gs.GameState.LEVEL
 

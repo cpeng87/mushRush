@@ -1,20 +1,21 @@
+import time
 import pygame
 import pygame.freetype
 from pygame.sprite import Sprite
 from pygame.rect import Rect
-from enum import Enum
 from pygame.sprite import RenderUpdates
 
 import level as l
-import shroom
 import gameState
 
 background_color = (215,224,209)      #change to title screen later
 white = (255, 255, 255)
-titleBg = pygame.image.load('bgPlaceholder.jpg')      #need replace!!!!!!!!!!!
-instructions = pygame.image.load('instructionScreen.png')
-levelField = pygame.image.load('dragonfield.png')
-gameOverScreen = pygame.image.load('gameOverPlaceholder.jpg')
+titleBg = pygame.image.load('./images/bgs/bgPlaceholder.jpg')      #need replace!!!!!!!!!!!
+instructions = pygame.image.load('./images/bgs/instructionScreen.png')
+levelField = pygame.image.load('./images/bgs/dragonfield.png')
+gameOverScreen = pygame.image.load('./images/bgs/gameOverPlaceholder.jpg')
+grilledShroom = pygame.image.load('./images/shroom/shiitake.png')
+grilledShroomBig = pygame.image.load('./images/shroom/shiitakeBig.png')
 
 class UIElement(Sprite):
     def __init__(self, center_position, text, font_size, bg_rgb, text_rgb, action=None):      #like a constructor
@@ -71,7 +72,25 @@ def title_screen(screen):
         action=gameState.GameState.NEWGAME,
     )
     buttons = RenderUpdates(start_btn, quit_btn)
-    return game_loop(screen, buttons, titleBg)
+    return title_loop(screen, buttons, titleBg)
+
+def title_loop(screen, buttons, bg, level=None):
+    while True:
+        mouse_up = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_up = True
+        screen.blit(bg, (0, 0))
+
+        for button in buttons:
+            ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
+            if ui_action is not None:
+                return ui_action
+
+        buttons.draw(screen)
+        pygame.display.flip()
     
 #need change to actual level
 def instruction(screen, player1):
@@ -94,22 +113,22 @@ def instruction(screen, player1):
     )
     
     buttons = RenderUpdates(return_btn, continue_btn)
-    return game_loop(screen, buttons, instructions)
+    return game_loop(screen, buttons, instructions, player1)
 
-buttonColor = (200,100,100)
+buttonColor = (117,153,138)
 
 def gameOver(screen, player1):
-    menu_btn = UIElement(
-        center_position= (550, 50),
+    menu_btn = UIElement(                 #change to restart later
+        center_position= (400, 400),
         font_size=30,
         bg_rgb=buttonColor,
         text_rgb=white,
-        text="Menu",
+        text="Restart",
         action=gameState.GameState.TITLE
     )
 
     quit_btn = UIElement(
-        center_position= (700, 50),
+        center_position= (400, 450),
         font_size=30,
         bg_rgb=buttonColor,
         text_rgb=white,
@@ -117,11 +136,11 @@ def gameOver(screen, player1):
         action=gameState.GameState.QUIT
     )
     buttons = RenderUpdates(menu_btn, quit_btn)
-    return game_loop(screen, buttons, gameOverScreen)
+    return game_loop(screen, buttons, gameOverScreen, player1)
         
 def level(screen, player1, level):
-    menu_btn = UIElement(
-    center_position= (550, 50),
+    menu_btn = UIElement(                       #change to restart later
+        center_position= (600, 45),
         font_size=30,
         bg_rgb=buttonColor,
         text_rgb=white,
@@ -129,8 +148,10 @@ def level(screen, player1, level):
         action=gameState.GameState.TITLE
     )
 
+    level.startTime = time.time()
+
     quit_btn = UIElement(
-        center_position= (700, 50),
+        center_position= (715, 45),
         font_size=30,
         bg_rgb=buttonColor,
         text_rgb=white,
@@ -138,21 +159,13 @@ def level(screen, player1, level):
         action=gameState.GameState.QUIT
     )
 
-    nextlevel_btn = UIElement(
-        center_position= (560, 550),
-        font_size = 30,
-        bg_rgb=background_color,
-        text_rgb=white,
-        text="Continue to next level",
-        action=gameState.GameState.NEXT_LEVEL
-    )
-    buttons = RenderUpdates(menu_btn, nextlevel_btn, quit_btn)
-    return game_loop(screen, buttons, levelField, level=level)
+    buttons = RenderUpdates(menu_btn, quit_btn)
+    return game_loop(screen, buttons, levelField, player1, level=level)
 
 
 # where you do per frame updates to the screen
 # once the UI is ready, this runs whatever is supposed to be drawn and the logic of the state
-def game_loop(screen, buttons, bg, level=None):
+def game_loop(screen, buttons, bg, player1, level=None):
     while True:
         mouse_up = False
         for event in pygame.event.get():
@@ -169,6 +182,77 @@ def game_loop(screen, buttons, bg, level=None):
 
         buttons.draw(screen)
         if level:
+            if(player1.gameOverChecker()):         #IT BROKEN
+                return gameState.GameState.GAME_OVER
+
+            if(level.doneChecker()):
+                nextlevel_btn = UIElement(
+                center_position= (560, 550),
+                font_size = 30,
+                bg_rgb=buttonColor,
+                text_rgb=white,
+                text="Continue to next level",
+                action=gameState.GameState.NEXT_LEVEL
+                )
+                nextButton = RenderUpdates(nextlevel_btn)
+
+                ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
+                if ui_action is not None:
+                    return ui_action
+                nextButton.draw(screen)
+
+            screen.blit(grilledShroom, (55, 30))
+
+            for grilled in level.shroomDrops:
+                grilled.update(pygame.mouse.get_pos(), mouse_up, player1, level)
+
+            level.removeShroom(player1)
+            player1.removeDrag()
+
+            lifeDisplay = UIElement(       
+            center_position=(270, 45),
+            font_size=30,
+            bg_rgb=buttonColor,
+            text_rgb= white,
+            text=f"Lives: " + str(player1.lives),
+            action=None,
+            )
+
+            timeDisplay = UIElement(       
+            center_position=(400, 45),
+            font_size=30,
+            bg_rgb=buttonColor,
+            text_rgb= white,
+            text=level.timerMinSec(),         #replace with timer later
+            action=None,
+            )
+
+            grilledDisplay = UIElement(       
+            center_position=(110, 45),
+            font_size=30,
+            bg_rgb=buttonColor,
+            text_rgb= white,
+            text= ": " + str(player1.grilled),       
+            action=None,
+            )
+
+            playerInfo = RenderUpdates(lifeDisplay, timeDisplay, grilledDisplay)
+            playerInfo.draw(screen)
+
+            for dragon in player1.mapDrags:
+                dragon.attackChecker(level)
+                dragon.collisionDetect(level)
+                dragon.draw(screen)
+                for fireball in dragon.fireballs:
+                    fireball.draw(screen)
+
+            for grilled in level.shroomDrops:
+                grilled.draw(screen)
+
             for shroom in level.listShroom:
+                dragonTarget = shroom.collisionWithDrag(player1)
+                if shroom.attacking:
+                    shroom.attackDrag(dragonTarget, level)
                 shroom.draw(screen)
+
         pygame.display.flip()
