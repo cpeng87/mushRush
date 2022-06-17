@@ -20,7 +20,6 @@ class Level():
         self.completed = False
         self.shroomDrops = []
 
-
         self.shroomDrops= [shroom.droppedShroom(500,500)]
         self.listShroom = [shroom.Shrooms(5, 800, r1, 64, 64, end, 1), shroom.Shrooms(5, 800, r2, 64, 64, end, 2), shroom.Shrooms(5, 800, r3, 64, 64, end, 3), shroom.Shrooms(5, 800, r4, 64, 64, end, 4), shroom.Shrooms(5, 800, r5, 64, 64, end, 5)]       #holds all the shrooms
 

@@ -2,7 +2,6 @@ import time
 import pygame
 import pygame.freetype
 from pygame.sprite import Sprite
-from pygame.rect import Rect
 from pygame.sprite import RenderUpdates
 
 import level as l
@@ -158,7 +157,6 @@ def level(screen, player1, level):
         text="Quit",
         action=gameState.GameState.QUIT
     )
-
     buttons = RenderUpdates(menu_btn, quit_btn)
     return game_loop(screen, buttons, levelField, player1, level=level)
 
@@ -240,11 +238,9 @@ def game_loop(screen, buttons, bg, player1, level=None):
             playerInfo.draw(screen)
 
             for dragon in player1.mapDrags:
-                dragon.attackChecker(level)
-                dragon.collisionDetect(level)
+                shroomTarget = dragon.attackChecker(level)
+                dragon.attack(level, shroomTarget)
                 dragon.draw(screen)
-                for fireball in dragon.fireballs:
-                    fireball.draw(screen)
 
             for grilled in level.shroomDrops:
                 grilled.draw(screen)

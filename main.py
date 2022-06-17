@@ -9,7 +9,7 @@ import gameState as gs
 
 #variables
 levelNum = 1
-timer = 20        #level time limit in seconds
+timer = 30        #level time limit in seconds
 mushNum = 20
 
 levels = [Level(levelNum, mushNum, timer), Level(levelNum, mushNum, timer)]
