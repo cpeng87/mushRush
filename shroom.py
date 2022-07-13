@@ -1,5 +1,6 @@
 import pygame
 import time
+from imageButton import imageButton
 
 class Shrooms(object):
     walkLeft = [pygame.image.load("./images/shroom/mushroom1.png"), pygame.image.load("./images/shroom/mushroom2.png"), pygame.image.load("./images/shroom/mushroom1.png"), pygame.image.load("./images/shroom/mushroom4.png")]
@@ -53,8 +54,8 @@ class Shrooms(object):
         player1.loseLife()
 
     def attackDrag(self, dragon, level):
-        if dragon != None:
-            if (int((time.time() - level.startTime)) - self.lastAttackTime) > 1 and dragon.hp > 0:       #set time delay here, change the 1
+        if dragon != None and dragon.hp > 0:
+            if (int((time.time() - level.startTime)) - self.lastAttackTime) > 1:       #set time delay here, change the 1
                 dragon.loseLife()
                 self.lastAttackTime = int((time.time() - level.startTime))
         else:
@@ -67,24 +68,13 @@ class Shrooms(object):
                 self.vel = 0
                 self.attacking = True
                 return dragon
+                
 
-class droppedShroom(object):
+class droppedShroom(imageButton):
     def __init__(self, x, y):
         grilledShroom = pygame.image.load('./images/shroom/shiitake.png')
         grilledShroomBig = pygame.image.load('./images/shroom/shiitakeBig.png')
-        self.mouse_over = False
-        self.x = x
-        self.y = y
-        self.images = [grilledShroom, grilledShroomBig]
-        self.rects = [grilledShroom.get_rect(center=(x,y)), grilledShroomBig.get_rect(center=(x,y)),]   #coordinates
-        super().__init__()
-
-    @property
-    def image(self):
-        return self.images[1] if self.mouse_over else self.images[0]
-    @property
-    def rect(self):
-        return self.rects[1] if self.mouse_over else self.rects[0]
+        imageButton.__init__(self, grilledShroom, grilledShroomBig, x, y)
 
     def update(self, mouse_pos, mouse_up, player1, level):
         if self.rect.collidepoint(mouse_pos):
@@ -94,7 +84,3 @@ class droppedShroom(object):
                 level.removeShroomDrop(self)
         else:
             self.mouse_over = False
-
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-

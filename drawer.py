@@ -15,6 +15,7 @@ levelField = pygame.image.load('./images/bgs/dragonfield.png')
 gameOverScreen = pygame.image.load('./images/bgs/gameOverPlaceholder.jpg')
 grilledShroom = pygame.image.load('./images/shroom/shiitake.png')
 grilledShroomBig = pygame.image.load('./images/shroom/shiitakeBig.png')
+cursorImgs = [pygame.image.load('./images/dragon/puffs1.png'), pygame.image.load('./images/dragon/kaboomo1.png'), pygame.image.load('./images/dragon/snailey1.png')]
 
 class UIElement(Sprite):
     def __init__(self, center_position, text, font_size, bg_rgb, text_rgb, action=None):      #like a constructor
@@ -157,9 +158,9 @@ def level(screen, player1, level):
         text="Quit",
         action=gameState.GameState.QUIT
     )
+
     buttons = RenderUpdates(menu_btn, quit_btn)
     return game_loop(screen, buttons, levelField, player1, level=level)
-
 
 # where you do per frame updates to the screen
 # once the UI is ready, this runs whatever is supposed to be drawn and the logic of the state
@@ -179,8 +180,17 @@ def game_loop(screen, buttons, bg, player1, level=None):
                 return ui_action
 
         buttons.draw(screen)
+
         if level:
-            if(player1.gameOverChecker()):         #IT BROKEN
+            if(dragNum != 0):
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        x,y = pygame.mouse.get_pos()
+                        print(str(x) + ", " + str(y))
+                        if x > 179 and x < 780 and y > 79 and y < 580:
+                            player1.shop(x, y, dragNum)
+
+            if(player1.gameOverChecker()):
                 return gameState.GameState.GAME_OVER
 
             if(level.doneChecker()):
@@ -203,6 +213,9 @@ def game_loop(screen, buttons, bg, player1, level=None):
 
             for grilled in level.shroomDrops:
                 grilled.update(pygame.mouse.get_pos(), mouse_up, player1, level)
+            
+            for button in player1.shopButtons:                     #wah si spaget code
+                dragNum = button.update(pygame.mouse.get_pos(), mouse_up, player1)     
 
             level.removeShroom(player1)
             player1.removeDrag()
@@ -245,10 +258,12 @@ def game_loop(screen, buttons, bg, player1, level=None):
             for grilled in level.shroomDrops:
                 grilled.draw(screen)
 
+            for button in player1.shopButtons:
+                button.draw(screen)
+
             for shroom in level.listShroom:
                 dragonTarget = shroom.collisionWithDrag(player1)
                 if shroom.attacking:
                     shroom.attackDrag(dragonTarget, level)
                 shroom.draw(screen)
-
         pygame.display.flip()
