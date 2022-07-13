@@ -1,6 +1,6 @@
 import pygame
 import time
-from imageButton import imageButton
+from Buttons import imageButton
 
 class Shrooms(object):
     walkLeft = [pygame.image.load("./images/shroom/mushroom1.png"), pygame.image.load("./images/shroom/mushroom2.png"), pygame.image.load("./images/shroom/mushroom1.png"), pygame.image.load("./images/shroom/mushroom4.png")]
@@ -18,7 +18,7 @@ class Shrooms(object):
         self.height = height
         self.end = end
         self.path = [x, end]
-        self.vel = -0.25      #moving left 0.25
+        self.vel = -1      #moving left 0.25
         self.walkCount = 0    #for animation
         self.row = row
         self.attacking = False
