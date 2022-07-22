@@ -2,22 +2,25 @@ import dragon
 import pygame
 from Buttons import imageButton
 
-puffsButton = pygame.image.load('./images/dragon/puffs1.png')
+puffsButton = pygame.image.load('./images/dragon/dragonPlaceholder.png')     #button images
 puffsButtonBig = pygame.image.load('./images/dragon/anyaBig.png')
-cursorImgs = [pygame.image.load('./images/dragon/puffs1.png'), pygame.image.load('./images/dragon/kaboomo1.png'), pygame.image.load('./images/dragon/snailey1.png')]
+removeReg = pygame.image.load('./images/dragon/removeButton.png')
+removeBig = pygame.image.load('./images/dragon/removeButtonBig.png')
 
 class Player:
-    def __init__(self, grilled=5, lives=5, current_level=1, drags=0):
+    def __init__(self, grilled=20, lives=5, current_level=1, drags=0):
         self.grilled = grilled
         self.lives = lives
         self.current_level = current_level
         self.drags = drags
         self.mapDrags = []
-        self.shopButtons = [shopButton(puffsButton, puffsButtonBig, 92, 120, 1), shopButton(puffsButton, puffsButtonBig, 92, 220, 2)]
+        self.grid = [[0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]]
+        self.shopButtons = [shopButton(puffsButton, puffsButtonBig, 92, 120, 1), shopButton(puffsButton, puffsButtonBig, 92, 220, 2), shopButton(puffsButton, puffsButtonBig, 92, 320, 3), shopButton(puffsButton, puffsButtonBig, 92, 420, 4), shopButton(puffsButton, puffsButtonBig, 92, 520, 5), shopButton(removeReg, removeBig, 500, 45, 6)]  #change the remove one
         self.selecting = False
         self.shoppingNum = 0
+        self.costs = [4, 2, 10, 8, 8, -1]  #puffs, kaboomo, snailey, pebble, lani
 
-        self.mapDrags = [dragon.Puffs(1, 1, 120, 72), dragon.Puffs(2, 1, 120, 72), dragon.Puffs(3, 1, 120, 72), dragon.Puffs(4, 1, 120, 72), dragon.Kaboomo(2, 4, 76, 72), dragon.Snailey(5, 1, 120, 72), dragon.Pebble(3, 2, 110, 72)]    #need change width and height
+        self.mapDrags = []    #need change width and height
 
     def buy(self, shroomCost):
         if self.drags >= 25:
@@ -37,6 +40,7 @@ class Player:
     def removeDrag(self): 
         for dragons in self.mapDrags:
             if(dragons.defeatedCheck()):
+                self.grid[dragons.row][dragons.col] = 0
                 self.mapDrags.remove(dragons)
 
     def gameOverChecker(self):
@@ -44,44 +48,54 @@ class Player:
             return True
         return False
     
-    def shop(self, x, y):
+    def shop(self, x, y, cost):
         if(x >= 180 and x <= 299):
+            col = 0
+        elif(x <= 419):
             col = 1
-        elif(x >= 300 and x <= 419):
-            col = 2        
-        elif(x >= 420 and x <= 539):
-            col = 3 
-        elif(x >= 540 and x <= 659):
-            col = 4
+        elif(x <= 539):
+            col = 2 
+        elif(x <= 659):
+            col = 3
         else:
-            col = 5
+            col = 4
 
         if(y >= 80 and y <= 179):
+            row = 0
+        elif(y <= 279):
             row = 1
-        elif(y >= 180 and y <= 279):
+        elif(y <= 379):
             row = 2
-        elif(y >= 280 and y <= 379):
+        elif(y <= 479):
             row = 3
-        elif(y >= 380 and y <= 479):
-            row = 4
         else:
-            row = 5
+            row = 4
 
-        print(str(row) + ", " + str(col))
+        if cost == -1:
+            for drago in self.mapDrags:
+                if drago.row == row and drago.col == col:
+                    self.selecting = False
+                    self.mapDrags.remove(drago)
+                    self.grid[row][col] = 0
+                    self.grilled += int(drago.cost/2)
+                    return
 
-        if self.selecting:
+        elif self.selecting and self.grid[row][col] == 0:
+            self.buy(cost)
             if self.shoppingNum == 1:
-                if(self.grilled >= 4):    #change costs later
-                    self.buy(4)
-                    self.mapDrags.append(dragon.Puffs(row, col, 120, 72))
-                else:
-                    self.selecting = False
+                self.mapDrags.append(dragon.Puffs(row, col, 120, 72, cost))
             elif self.shoppingNum == 2:
-                if(self.grilled >= 2):
-                    self.buy(2)
-                    self.mapDrags.append(dragon.Kaboomo(row, col, 76, 72))
-                else:
-                    self.selecting = False
+                self.mapDrags.append(dragon.Kaboomo(row, col, 76, 72, cost))
+            elif self.shoppingNum == 3:
+                self.mapDrags.append(dragon.Snailey(row, col, 120, 72, cost))
+            elif self.shoppingNum == 4:
+                self.mapDrags.append(dragon.Pebble(row, col, 120, 72, cost))
+            elif self.shoppingNum == 5:
+                self.mapDrags.append(dragon.Lani(row, col, 120, 60, cost))
+            self.selecting = False
+            self.grid[row][col] = 1
+
+        self.selecting = False
 
 class shopButton(imageButton):
     def __init__(self, regPic, bigPic, x, y, dragNum):

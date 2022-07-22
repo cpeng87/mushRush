@@ -1,4 +1,3 @@
-from pygame.sprite import Sprite
 import pygame.freetype
 
 class imageButton(object):
@@ -29,7 +28,6 @@ class textButton(object):
         self.images = [default_image, highlighted_image]     #images saved in an list
         self.rects = [default_image.get_rect(center=center_position), highlighted_image.get_rect(center=center_position),]   #coordinates
         self.stateChange = stateChange
-        super().__init__()    # calls the init method of the parent sprite class
 
     # properties that vary the image and its rect when the mouse is over the element
     @property
@@ -50,6 +48,12 @@ class textButton(object):
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
+class displayText(object):
+    def __init__(self, center_position, text, font_size, bg_rgb, text_rgb):
+        self.image = create_surface_with_text(text = text, font_size=font_size, text_rgb=text_rgb, bg_rgb=bg_rgb)
+        self.rect = self.image.get_rect(center=center_position)
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
 
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
     font = pygame.freetype.SysFont("showcardgothic", font_size, bold=True)
