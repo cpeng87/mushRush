@@ -1,3 +1,4 @@
+
 import dragon
 import pygame
 from Buttons import imageButton
@@ -13,14 +14,13 @@ class Player:
         self.lives = lives
         self.current_level = current_level
         self.drags = drags
-        self.mapDrags = []
+        self.mapDrags = [dragon.Pebble(0, 0, 120, 72, 8), dragon.Pebble(1, 2, 120, 72, 8),]
         self.grid = [[0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]]
         self.shopButtons = [shopButton(puffsButton, puffsButtonBig, 92, 120, 1), shopButton(puffsButton, puffsButtonBig, 92, 220, 2), shopButton(puffsButton, puffsButtonBig, 92, 320, 3), shopButton(puffsButton, puffsButtonBig, 92, 420, 4), shopButton(puffsButton, puffsButtonBig, 92, 520, 5), shopButton(removeReg, removeBig, 500, 45, 6)]  #change the remove one
         self.selecting = False
         self.shoppingNum = 0
         self.costs = [4, 2, 10, 8, 8, -1]  #puffs, kaboomo, snailey, pebble, lani
 
-        self.mapDrags = []    #need change width and height
 
     def buy(self, shroomCost):
         if self.drags >= 25:
@@ -110,5 +110,4 @@ class shopButton(imageButton):
                     player1.shoppingNum = self.dragNum
         else:
             self.mouse_over = False
-
 

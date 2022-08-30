@@ -40,7 +40,9 @@ cursorImgs = [pygame.image.load('./images/dragon/puffs1.png'), pygame.image.load
 # main game logic loop
 # takes care of the state machine in the game
 # handles the transitions between states and calling the correct drawing method
+clock = pygame.time.Clock()
 while running:
+    clock.tick(90)
     click = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

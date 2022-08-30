@@ -10,7 +10,7 @@ class Level():
         self.mushNum = mushNum
         self.timeLimit = timeLimit
         self.levelNum = levelNum
-        self.listShroom = []       #holds all the shrooms
+        self.listShroom = [shroom.disguisedShroom(10, 800, rowPix[0], 77, 54, 0), shroom.ninjaShroom(10, 800, rowPix[1], 77, 54, 1)]       #holds all the shrooms
         self.timeRemaining = timeLimit
         self.startTime = 0
         self.completed = False
@@ -18,10 +18,10 @@ class Level():
         self.paused = False
         self.pauseStart = 0
         self.pauseTime = 0
-        self.spawnTime = [60,]
+        self.spawnTime = [60, 59, 58]
+        self.coolShrooms = []  #
 
         self.shroomDrops= [shroom.droppedShroom(500,500)]
-        self.listShroom = []       #holds all the shrooms
 
         while(mushNum > 0):   #change spawn array, possibly hard code?
            self.spawnTime.append(random.randint(0, self.timeLimit))

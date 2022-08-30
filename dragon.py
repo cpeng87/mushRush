@@ -302,4 +302,3 @@ class Lani(Dragon):    #fireball drag
                     if(iceball.iceballAttack(shroom)):
                         self.iceballs.remove(iceball)
 
-
