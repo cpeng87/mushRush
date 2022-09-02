@@ -259,7 +259,7 @@ class Snailey(Dragon):    #lazer go brrr
 class Pebble(Dragon):     #tanky tank is tanky
     chill = pygame.image.load('./images/dragon/pebble.png')
     def __init__(self, row, col, width, height, cost):
-        self.hp = 15
+        self.hp = 3
         Dragon.__init__(self, row, col, width, height, cost)
         self.attacking = False
 

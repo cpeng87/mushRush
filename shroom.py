@@ -147,31 +147,31 @@ class ninjaShroom(Shrooms):    #it still attacks after it has been manually remo
 
     def collisionWithDrag(self, player1):
         if self.teleporting:   #probs causes the glitching in the beginning
-            if len(player1.mapDrags) == 0 and self.target == None:
+            if len(player1.mapDrags) == 0 and self.target == None:     #player attack
                 self.move()
                 self.attackPlayer()
                 return None
-            elif self.target == None:
+            elif self.target == None or self.target not in player1.mapDrags:    #no target, now randomize new one
                 rand = random.randint(0, len(player1.mapDrags) - 1)
                 newTarget = player1.mapDrags[rand]
                 self.target = newTarget
                 self.move()
                 return newTarget
-        elif self.target == None:
+        elif self.target == None:    #no target and not teleporting??
             return
-        else:
+        else:     #in front of drag and attack it
             if(self.x == self.target.x + 70 and self.row):
                 self.vel = 0
                 self.attacking = True
 
     def move(self):    #need to add if collide with a draggo
         #rando and tele
-        if self.x == 152:
+        if self.x == 152:  #do nothing
             return
-        elif self.target == None:
+        elif self.target == None:    #start timer for final attack
             self.x = 152
             self.final = time.time()
-        elif self.target.x + 70 != self.x or self.target.y != self.y:
+        elif self.target.x + 70 != self.x or self.target.y != self.y:    #autual teleport
             self.x = self.target.x + 70
             self.y = self.target.y + 10
 
@@ -208,7 +208,7 @@ class ninjaShroom(Shrooms):    #it still attacks after it has been manually remo
             self.target = None
 
     def attackPlayer(self):
-        if(int((time.time() - self.final) * 10)) >= 7:      ##broken?
+        if(int((time.time() - self.final) * 10)) >= 7:      #1 sec delay of final attack so player can see it
             self.x = 148
 
 class droppedShroom(imageButton):

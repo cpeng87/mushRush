@@ -52,9 +52,9 @@ while running:
 
     if gameState == GameState.TITLE:
         screen.blit(titleBg, (0, 0))
-        level1 = level.Level(1, 10, 60)    #level, mush, time
-        level2 = level.Level(1, 50, 90)    #level, mush, time
-        level3 = level.Level(1, 70, 110)    #level, mush, time
+        level1 = level.Level(1, 10, 60, 5)    #level, mush, time, specialShrooms
+        level2 = level.Level(1, 50, 90, 10)    #level, mush, time
+        level3 = level.Level(1, 70, 110, 15)    #level, mush, time
 
         allLv = [level1, level2, level3]
         lvIndex = 0

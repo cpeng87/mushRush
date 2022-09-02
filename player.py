@@ -14,7 +14,7 @@ class Player:
         self.lives = lives
         self.current_level = current_level
         self.drags = drags
-        self.mapDrags = [dragon.Pebble(0, 0, 120, 72, 8), dragon.Pebble(1, 2, 120, 72, 8),]
+        self.mapDrags = []
         self.grid = [[0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]]
         self.shopButtons = [shopButton(puffsButton, puffsButtonBig, 92, 120, 1), shopButton(puffsButton, puffsButtonBig, 92, 220, 2), shopButton(puffsButton, puffsButtonBig, 92, 320, 3), shopButton(puffsButton, puffsButtonBig, 92, 420, 4), shopButton(puffsButton, puffsButtonBig, 92, 520, 5), shopButton(removeReg, removeBig, 500, 45, 6)]  #change the remove one
         self.selecting = False

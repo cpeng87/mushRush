@@ -6,11 +6,11 @@ rowPix = [105,205,305,405,505]
 end = 150
 
 class Level():
-    def __init__(self, levelNum, mushNum, timeLimit):
+    def __init__(self, levelNum, mushNum, timeLimit, numSpecial):
         self.mushNum = mushNum
         self.timeLimit = timeLimit
         self.levelNum = levelNum
-        self.listShroom = [shroom.disguisedShroom(10, 800, rowPix[0], 77, 54, 0), shroom.ninjaShroom(10, 800, rowPix[1], 77, 54, 1)]       #holds all the shrooms
+        self.listShroom = []       #holds all the shrooms
         self.timeRemaining = timeLimit
         self.startTime = 0
         self.completed = False
@@ -19,13 +19,17 @@ class Level():
         self.pauseStart = 0
         self.pauseTime = 0
         self.spawnTime = [60, 59, 58]
-        self.coolShrooms = []  #
+        self.specialSpawn = [] #special shroomos get a special time(10sec delay)
 
         self.shroomDrops= [shroom.droppedShroom(500,500)]
 
         while(mushNum > 0):   #change spawn array, possibly hard code?
            self.spawnTime.append(random.randint(0, self.timeLimit))
            mushNum -= 1
+
+        while(numSpecial > 0):
+            self.specialSpawn.append(random.randint(0, self.timeLimit - 10))
+            numSpecial -= 1
 
     def doneChecker(self):
         if(self.timeRemaining <= 0 and len(self.listShroom) == 0):
@@ -55,6 +59,18 @@ class Level():
                 spawnRow = random.randint(0,4)
                 mush = shroom.Shrooms(5, 800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
                 self.spawnTime.remove(time)
+                self.listShroom.append(mush)
+
+        for specialTime in self.specialSpawn:
+            if(self.timeRemaining == specialTime):
+                spawnRow = random.randint(0,4)
+                spawnType = random.randint(0,1)  #determines type of special shroom
+                print(spawnType)
+                if spawnType == 0:
+                    mush = shroom.disguisedShroom(10, 800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
+                elif spawnType == 1:
+                    mush = shroom.ninjaShroom(10, 800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
+                self.specialSpawn.remove(specialTime)
                 self.listShroom.append(mush)
 
     def removeShroom(self, player1):    #via death or reach end of map
