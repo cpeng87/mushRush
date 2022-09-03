@@ -64,12 +64,12 @@ class Level():
         for specialTime in self.specialSpawn:
             if(self.timeRemaining == specialTime):
                 spawnRow = random.randint(0,4)
-                spawnType = random.randint(0,1)  #determines type of special shroom
+                spawnType = random.randint(0,2)  #determines type of special shroom
                 print(spawnType)
-                if spawnType == 0:
+                if spawnType == 0 or spawnType == 1:
                     mush = shroom.disguisedShroom(10, 800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
-                elif spawnType == 1:
-                    mush = shroom.ninjaShroom(10, 800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
+                elif spawnType == 2:
+                    mush = shroom.ninjaShroom(5, 800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
                 self.specialSpawn.remove(specialTime)
                 self.listShroom.append(mush)
 

@@ -160,7 +160,7 @@ class ninjaShroom(Shrooms):    #it still attacks after it has been manually remo
         elif self.target == None:    #no target and not teleporting??
             return
         else:     #in front of drag and attack it
-            if(self.x == self.target.x + 70 and self.row):
+            if(self.x == self.target.x + 86 and self.row):
                 self.vel = 0
                 self.attacking = True
 
@@ -171,8 +171,8 @@ class ninjaShroom(Shrooms):    #it still attacks after it has been manually remo
         elif self.target == None:    #start timer for final attack
             self.x = 152
             self.final = time.time()
-        elif self.target.x + 70 != self.x or self.target.y != self.y:    #autual teleport
-            self.x = self.target.x + 70
+        elif self.target.x + 86 != self.x or self.target.y != self.y:    #autual teleport
+            self.x = self.target.x + 86
             self.y = self.target.y + 10
 
     def draw(self, win):
