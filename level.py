@@ -10,7 +10,7 @@ class Level():
         self.mushNum = mushNum
         self.timeLimit = timeLimit
         self.levelNum = levelNum
-        self.listShroom = []       #holds all the shrooms
+        self.listShroom = [shroom.Sparky(800, rowPix[0], 77, 54, 0)]       #holds all the shrooms
         self.timeRemaining = timeLimit
         self.startTime = 0
         self.completed = False
@@ -21,7 +21,7 @@ class Level():
         self.spawnTime = [60, 59, 58]
         self.specialSpawn = [] #special shroomos get a special time(10sec delay)
 
-        self.shroomDrops= [shroom.droppedShroom(500,500)]
+        self.shroomDrops= [shroom.droppedShroom(500,500), shroom.specialShroom(600,500)]
 
         while(mushNum > 0):   #change spawn array, possibly hard code?
            self.spawnTime.append(random.randint(0, self.timeLimit))
@@ -57,7 +57,7 @@ class Level():
         for time in self.spawnTime:
             if(self.timeRemaining == time):
                 spawnRow = random.randint(0,4)
-                mush = shroom.Shrooms(5, 800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
+                mush = shroom.Shrooms(800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
                 self.spawnTime.remove(time)
                 self.listShroom.append(mush)
 
@@ -67,9 +67,9 @@ class Level():
                 spawnType = random.randint(0,2)  #determines type of special shroom
                 print(spawnType)
                 if spawnType == 0 or spawnType == 1:
-                    mush = shroom.disguisedShroom(10, 800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
+                    mush = shroom.disguisedShroom(800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
                 elif spawnType == 2:
-                    mush = shroom.ninjaShroom(5, 800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
+                    mush = shroom.ninjaShroom(800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
                 self.specialSpawn.remove(specialTime)
                 self.listShroom.append(mush)
 

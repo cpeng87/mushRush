@@ -19,6 +19,7 @@ class Player:
         self.shopButtons = [shopButton(puffsButton, puffsButtonBig, 92, 120, 1), shopButton(puffsButton, puffsButtonBig, 92, 220, 2), shopButton(puffsButton, puffsButtonBig, 92, 320, 3), shopButton(puffsButton, puffsButtonBig, 92, 420, 4), shopButton(puffsButton, puffsButtonBig, 92, 520, 5), shopButton(removeReg, removeBig, 500, 45, 6)]  #change the remove one
         self.selecting = False
         self.shoppingNum = 0
+        self.buffing = False
         self.costs = [4, 2, 10, 8, 8, -1]  #puffs, kaboomo, snailey, pebble, lani
 
 
@@ -47,8 +48,14 @@ class Player:
         if self.lives <= 0:
             return True
         return False
-    
-    def shop(self, x, y, cost):
+
+    def contains(self, row, col):
+        for drag in self.mapDrag:
+            if(drag.row == row and drag.col == col):
+                return drag
+        return None
+
+    def rowCol(self, x, y):
         if(x >= 180 and x <= 299):
             col = 0
         elif(x <= 419):
@@ -70,7 +77,10 @@ class Player:
             row = 3
         else:
             row = 4
+        return row,col
 
+    def shop(self, x, y, cost):
+        row, col = self.rowCol(x,y)
         if cost == -1:
             for drago in self.mapDrags:
                 if drago.row == row and drago.col == col:
@@ -96,6 +106,16 @@ class Player:
             self.grid[row][col] = 1
 
         self.selecting = False
+
+    def buff(self, x, y):
+        row, col = self.rowCol(x,y)
+        buffDrag = self.contains(row, col)
+        if(buffDrag != 0):
+            buffDrag.skill()
+            self.buffing = False
+            return True
+        self.buffing = False
+        return False
 
 class shopButton(imageButton):
     def __init__(self, regPic, bigPic, x, y, dragNum):

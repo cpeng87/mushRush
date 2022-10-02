@@ -36,6 +36,9 @@ gameOverBg = pygame.image.load('./images/bgs/gameOverPlaceholder.jpg')
 grilledShroom = pygame.image.load('./images/shroom/shiitake.png')
 grilledShroomBig = pygame.image.load('./images/shroom/shiitakeBig.png')
 
+specialMush = pygame.image.load('./images/shroom/specialMush.png')
+specialMushBig = pygame.image.load('./images/shroom/specialMushBig.png')
+
 cursorImgs = [pygame.image.load('./images/dragon/puffs1.png'), pygame.image.load('./images/dragon/kaboomo1.png'), pygame.image.load('./images/dragon/snailey1.png'), pygame.image.load('./images/dragon/pebble.png'), pygame.image.load('./images/dragon/lani1.png'), pygame.image.load('./images/dragon/removeButton.png'),]
 # main game logic loop
 # takes care of the state machine in the game
@@ -224,6 +227,16 @@ while running:
             else:
                 player1.selecting = False
 
+            if player1.buffing:
+                pygame.mouse.set_visible(False)
+                if click:
+                    x,y = pygame.mouse.get_pos()
+                    if x > 179 and x < 780 and y > 79 and y < 580 and player1.shoppingNum != 0:
+                        player1.buff(x, y)
+                    else:
+                        player1.buffing = False
+                        pygame.mouse.set_visible(True)
+
             #drops and shops buttons update
             for grilled in allLv[lvIndex].shroomDrops:
                 grilled.update(pygame.mouse.get_pos(), click, player1, allLv[lvIndex])
@@ -257,6 +270,10 @@ while running:
                 cursorRect = cursorImgs[player1.shoppingNum - 1].get_rect()
                 cursorRect.center = pygame.mouse.get_pos()  # update position 
                 screen.blit(cursorImgs[player1.shoppingNum - 1], cursorRect) #draw the cursor
+            elif player1.buffing:
+                cursorRect = specialMush.get_rect()
+                cursorRect.center = pygame.mouse.get_pos()  # update position 
+                screen.blit(specialMush, cursorRect) #draw the cursor
             
             if(allLv[lvIndex].doneChecker()):
                 nextLvButton = Buttons.textButton(

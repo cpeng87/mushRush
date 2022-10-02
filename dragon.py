@@ -211,6 +211,8 @@ class Kaboomo(Dragon):    #suicide draggo
         if self.hp == 1000:
             self.animationCount = 0
             self.hp -= 1
+    
+    #def skill(self): #increase radius of attack
 
 class Snailey(Dragon):    #lazer go brrr
     s1 = pygame.image.load('./images/dragon/snailey1.png')
@@ -256,6 +258,8 @@ class Snailey(Dragon):    #lazer go brrr
         self.laser = Laser(self.x + 120, self.y + 30, 800 - self.x + 95, 50, row, level)
         return self.laser
 
+    #def skill():    slow with longer laser duration
+
 class Pebble(Dragon):     #tanky tank is tanky
     chill = pygame.image.load('./images/dragon/pebble.png')
     def __init__(self, row, col, width, height, cost):
@@ -265,6 +269,8 @@ class Pebble(Dragon):     #tanky tank is tanky
 
     def draw(self, win):
         win.blit(self.chill, (self.x, self.y))
+
+    #def skill(self.win):   no damage taken
 
 class Lani(Dragon):    #fireball drag
     l1 = pygame.image.load('./images/dragon/lani1.png')
@@ -301,4 +307,6 @@ class Lani(Dragon):    #fireball drag
                 if(shroom != None):
                     if(iceball.iceballAttack(shroom)):
                         self.iceballs.remove(iceball)
+
+    #def skill(self, level, shroom):   stop in place for 1s
 
