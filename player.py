@@ -50,7 +50,7 @@ class Player:
         return False
 
     def contains(self, row, col):
-        for drag in self.mapDrag:
+        for drag in self.mapDrags:
             if(drag.row == row and drag.col == col):
                 return drag
         return None

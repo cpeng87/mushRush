@@ -76,7 +76,12 @@ class Shrooms(object):
                 self.attacking = True
                 self.target = dragon
                 return dragon
-class bigBoy(Shrooms):
+
+class special(Shrooms):
+    def __init__(self, x, y, width, height, row):
+        Shrooms.__init__(self, x, y, width, height, row)
+
+class bigBoy(special):
     bigWalkLeft = []
     def __init__(self, x, y, width, height, row):
         self.hp = 40
@@ -84,7 +89,7 @@ class bigBoy(Shrooms):
     
     #def draw()
 
-class Sparky(Shrooms):
+class Sparky(special):
     sparkyWalkLeft = [pygame.image.load("./images/shroom/sparky1.png"), pygame.image.load("./images/shroom/sparky2.png"), pygame.image.load("./images/shroom/sparky1.png"), pygame.image.load("./images/shroom/sparky4.png"),]
     s1 = pygame.image.load("./images/shroom/sparky1.png")
     s2 = pygame.image.load("./images/shroom/sparkyAttack2.png")
@@ -133,7 +138,7 @@ class Sparky(Shrooms):
 
     def collisionWithDrag(self, player1):
         for dragon in player1.mapDrags:
-            if(dragon.row == self.row or dragon.col == self.col):
+            if(dragon.row == self.row):
                 self.targetArr.append(dragon)
                 if((dragon.x + 10) < self.x and (dragon.x + dragon.width - 5) > self.x):
                     self.vel = 0
@@ -141,7 +146,7 @@ class Sparky(Shrooms):
                     self.target = dragon
                     return dragon
                 
-class disguisedShroom(Shrooms):
+class disguisedShroom(special):
     disWalkLeft = [pygame.image.load("./images/shroom/disguisedShroom1.png"), pygame.image.load("./images/shroom/disguisedShroom2.png"), pygame.image.load("./images/shroom/disguisedShroom1.png"), pygame.image.load("./images/shroom/disguisedShroom4.png")]
     def __init__(self, x, y, width, height, row):
         self.disguised = True
@@ -192,7 +197,7 @@ class disguisedShroom(Shrooms):
                 win.blit(self.walkLeft[0], (self.x, self.y))
             self.walkCount += 1
 
-class ninjaShroom(Shrooms):    #it still attacks after it has been manually removed haha, need new method
+class ninjaShroom(special):    #it still attacks after it has been manually removed haha, need new method
     t1= pygame.image.load("./images/shroom/ninjaShroomTele1.png")
     t2 = pygame.image.load("./images/shroom/ninjaShroomTele2.png")
     t3 = pygame.image.load("./images/shroom/ninjaShroomTele3.png")

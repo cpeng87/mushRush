@@ -76,7 +76,10 @@ class Level():
     def removeShroom(self, player1):    #via death or reach end of map
         for shroomo in self.listShroom:
             if shroomo.hp <= 0:
-                self.shroomDrops.append(shroom.droppedShroom(shroomo.x + 20, shroomo.y + 40))
+                if(isinstance(shroomo, shroom.special)):    #checks if it is a special shroom
+                    self.shroomDrops.append(shroom.specialShroom(shroomo.x + 20, shroomo.y + 40))
+                else:
+                    self.shroomDrops.append(shroom.droppedShroom(shroomo.x + 20, shroomo.y + 40))
                 self.listShroom.remove(shroomo)
             elif shroomo.x <= end + 1:
                 self.listShroom.remove(shroomo)

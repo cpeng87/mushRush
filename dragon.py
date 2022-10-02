@@ -144,10 +144,11 @@ class Puffs(Dragon):    #fireball drag
         self.fireballs = []
         self.lastAttackTime = 0
         self.animationCount = 0
+        self.fireballCd = 1
         Dragon.__init__(self, row, col, width, height, cost)
     
     def fireballSpawn(self, level):
-        if (int((time.time() - level.startTime)) - self.lastAttackTime) > 1 and self.hp > 0:       #set time delay here, change the 1
+        if (int((time.time() - level.startTime)) - self.lastAttackTime) > self.fireballCd and self.hp > 0:       #set time delay here, change the 1
             self.fireballs.append(Fireball(self.x + 85, self.y + 50, 25, 19, self.row))
             self.lastAttackTime = int((time.time() - level.startTime))
             return self.fireballs[0]
