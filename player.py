@@ -4,7 +4,15 @@ import pygame
 from Buttons import imageButton
 
 puffsButton = pygame.image.load('./images/dragon/dragonPlaceholder.png')     #button images
-puffsButtonBig = pygame.image.load('./images/dragon/anyaBig.png')
+puffsButtonBig = pygame.image.load('./images/dragon/puffsBig.png')
+kaboomoButton = pygame.image.load('./images/dragon/kaboomoButton.png')
+kaboomoButtonBig = pygame.image.load('./images/dragon/kaboomoBig.png')
+snaileyButton = pygame.image.load('./images/dragon/snaileyButton.png')
+snaileyButtonBig = pygame.image.load('./images/dragon/snaileyBig.png')
+pebbleButton = pygame.image.load('./images/dragon/pebbleButton.png')
+pebbleButtonBig = pygame.image.load('./images/dragon/pebbleBig.png')
+laniButton = pygame.image.load('./images/dragon/laniButton.png')
+laniButtonBig = pygame.image.load('./images/dragon/laniBig.png')
 removeReg = pygame.image.load('./images/dragon/removeButton.png')
 removeBig = pygame.image.load('./images/dragon/removeButtonBig.png')
 
@@ -16,11 +24,12 @@ class Player:
         self.drags = drags
         self.mapDrags = []
         self.grid = [[0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]]
-        self.shopButtons = [shopButton(puffsButton, puffsButtonBig, 92, 120, 1), shopButton(puffsButton, puffsButtonBig, 92, 220, 2), shopButton(puffsButton, puffsButtonBig, 92, 320, 3), shopButton(puffsButton, puffsButtonBig, 92, 420, 4), shopButton(puffsButton, puffsButtonBig, 92, 520, 5), shopButton(removeReg, removeBig, 500, 45, 6)]  #change the remove one
+        self.shopButtons = [shopButton(puffsButton, puffsButtonBig, 92, 120, 1), shopButton(kaboomoButton, kaboomoButtonBig, 92, 220, 2), shopButton(snaileyButton, snaileyButtonBig, 92, 320, 3), shopButton(pebbleButton, pebbleButtonBig, 92, 420, 4), shopButton(laniButton, laniButtonBig, 92, 520, 5), shopButton(removeReg, removeBig, 500, 43, 6)]  #change the remove one
         self.selecting = False
         self.shoppingNum = 0
         self.buffing = False
-        self.costs = [4, 2, 10, 8, 8, -1]  #puffs, kaboomo, snailey, pebble, lani
+        self.usingShroom = None
+        self.costs = [5, 3, 8, 8, 8, -1]  #puffs, kaboomo, snailey, pebble, lani
 
 
     def buy(self, shroomCost):
@@ -107,15 +116,16 @@ class Player:
 
         self.selecting = False
 
-    def buff(self, x, y):
+    def buff(self, x, y, level):
         row, col = self.rowCol(x,y)
         buffDrag = self.contains(row, col)
-        if(buffDrag != 0):
-            buffDrag.skill()
-            self.buffing = False
-            return True
+        print(buffDrag)
+        if(buffDrag != None and buffDrag.skill == False):
+            buffDrag.skill = True
+        else:
+            level.shroomDrops.append(self.usingShroom)
+        self.usingShroom = None
         self.buffing = False
-        return False
 
 class shopButton(imageButton):
     def __init__(self, regPic, bigPic, x, y, dragNum):

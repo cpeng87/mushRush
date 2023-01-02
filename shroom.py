@@ -16,7 +16,7 @@ class Shrooms(object):
 
     #to make a shroom = Shrooms(5, 100, 410, 64, 64, 450)
     def __init__(self, x, y, width, height, row):
-        self.hp = 5
+        self.hp = 8
         self.x = x     #xy coordinates of shroom
         self.y = y    
         self.width = width        #of shroom 77x54
@@ -31,6 +31,7 @@ class Shrooms(object):
         self.attackCount = 0
         self.target = None
         self.aniMultiWalk = 30
+        self.frozen = False
 
     def draw(self, win):
         self.move()
@@ -61,7 +62,9 @@ class Shrooms(object):
         player1.loseLife()
 
     def attackDrag(self, dragon, level):
-        if dragon != None and dragon.hp > 0:
+        if self.frozen:
+            return
+        elif dragon != None and dragon.hp > 0:
             if (int((time.time() - level.startTime)) - self.lastAttackTime) > 1:       #set time delay here, change the 1
                 dragon.loseLife()
                 self.lastAttackTime = int((time.time() - level.startTime))
@@ -81,78 +84,115 @@ class special(Shrooms):
     def __init__(self, x, y, width, height, row):
         Shrooms.__init__(self, x, y, width, height, row)
 
-class bigBoy(special):
-    bigWalkLeft = []
-    def __init__(self, x, y, width, height, row):
-        self.hp = 40
-        Shrooms.__init__(self, x, y, width, height, row)
+# class bigBoy(special):
+#     bigWalkLeft = [pygame.image.load("./images/shroom/bigBoy1.png")]
+#     def __init__(self, x, y, width, height, row):
+#         self.hp = 4
+#         self.cap = bigBoy2(x, y - 100, width, height, row - 1)
+#         self.vel = -0.15
+#         Shrooms.__init__(self, x, y, width, height, row)
+
+#     def draw(self, win):
+#         print("big boy his here!")
+#         print(self.hp)
+#         self.move()
+#         self.update()
+#         win.blit(self.bigWalkLeft[0], (self.x, self.y - 125))
+
+#     def loseHp(self):
+#         self.hp -= 1
+
+#     def update(self):
+#         if self.cap.hp != 1000:
+#             self.hp -= 1000 - self.cap.hp
+
+# class bigBoy2(Shrooms):
+#     def __init__(self, x, y, width, height, row):
+#         self.hp = 1000
+#         Shrooms.__init__(self, x, y, width, height, row)
+
+#     def draw(self, win):
+#         print("i have a hat")
+#         return
+
+#     def loseHp(self):
+#         print("MYHAT!!")
+#         self.hp -= 1
+
+# class Sparky(special):
+#     sparkyWalkLeft = [pygame.image.load("./images/shroom/sparky1.png"), pygame.image.load("./images/shroom/sparky2.png"), pygame.image.load("./images/shroom/sparky1.png"), pygame.image.load("./images/shroom/sparky4.png"),]
+#     s1 = pygame.image.load("./images/shroom/sparky1.png")
+#     s2 = pygame.image.load("./images/shroom/sparkyAttack2.png")
+#     s3 = pygame.image.load("./images/shroom/sparkyAttack3.png")
+#     s4 = pygame.image.load("./images/shroom/sparkyAttack4.png")
+#     sparkyAttack = [s1,s1,s1,s1,s1,s1,s2,s3,s4,s3,s4,s3,s2]
+#     sparkyRing = pygame.image.load("./images/shroom/sparkyRing.png")
+#     #^^^^13frames
+
+#     def __init__(self, x, y, width, height, row):
+#         self.hp = 5
+#         self.targetArr = []
+#         Shrooms.__init__(self, x, y, width, height, row)
     
-    #def draw()
+#     def draw(self, win):
+#         self.move()
+#         if self.walkCount + 1 >= self.aniMultiWalk * 4:    #x*numSprites, x is how many times a frame is played
+#             self.walkCount = 0
+#         if self.attackCount + 1 >= 91:
+#             self.attackCount = 0
+#         if self.vel != 0:
+#             win.blit(self.sparkyWalkLeft[self.walkCount // self.aniMultiWalk], (self.x, self.y - 35)) #x
+#             self.walkCount = self.walkCount + 1
+#         elif self.attacking:
+#             win.blit(self.sparkyAttack[self.attackCount // 7], (self.x-5, self.y -35))
+#             self.attackCount = self.attackCount + 1
+#         else:
+#             win.blit(self.sparkyWalkLeft[0], (self.x, self.y - 35))
+#         self.walkCount += 1
 
-class Sparky(special):
-    sparkyWalkLeft = [pygame.image.load("./images/shroom/sparky1.png"), pygame.image.load("./images/shroom/sparky2.png"), pygame.image.load("./images/shroom/sparky1.png"), pygame.image.load("./images/shroom/sparky4.png"),]
-    s1 = pygame.image.load("./images/shroom/sparky1.png")
-    s2 = pygame.image.load("./images/shroom/sparkyAttack2.png")
-    s3 = pygame.image.load("./images/shroom/sparkyAttack3.png")
-    s4 = pygame.image.load("./images/shroom/sparkyAttack4.png")
-    sparkyAttack = [s1,s1,s1,s1,s1,s1,s2,s3,s4,s3,s4,s3,s2]
-    sparkyRing = pygame.image.load("./images/shroom/sparkyRing.png")
-    #^^^^13frames
+#     def move(self):    #need to add if collide with a draggo
+#         if self.x + self.vel > self.path[1]:
+#             self.x += self.vel
+#         else:
+#             self.vel = 0     #reach end of map, need life decrease
 
-    def __init__(self, x, y, width, height, row):
-        self.hp = 5
-        self.targetArr = []
-        Shrooms.__init__(self, x, y, width, height, row)
-    
-    def draw(self, win):
-        self.move()
-        if self.walkCount + 1 >= self.aniMultiWalk * 4:    #x*numSprites, x is how many times a frame is played
-            self.walkCount = 0
-        if self.attackCount + 1 >= 91:
-            self.attackCount = 0
-        if self.vel != 0:
-            win.blit(self.sparkyWalkLeft[self.walkCount // self.aniMultiWalk], (self.x, self.y - 35)) #x
-            self.walkCount = self.walkCount + 1
-        elif self.attacking:
-            win.blit(self.sparkyAttack[self.attackCount // 7], (self.x-5, self.y -35))
-            self.attackCount = self.attackCount + 1
-        else:
-            win.blit(self.sparkyWalkLeft[0], (self.x, self.y))
-        self.walkCount += 1
+#     def attackDrag(self, dragon, level):
+#         if self.frozen:
+#             return
+#         if dragon != None and dragon.hp > 0:
+#             if (int((time.time() - level.startTime)) - self.lastAttackTime) > 2:       #set time delay here, change the 1
+#                 dragon.loseLife()     #attacks all drags in a row once collided
+#                 print("YOUVE BEEN zAPPED")
+#                 self.lastAttackTime = int((time.time() - level.startTime))
+#         else:
+#             self.vel = -0.25
+#             self.attacking = False
+#             self.targetArr = []
 
-    def move(self):    #need to add if collide with a draggo
-        if self.x + self.vel > self.path[1]:
-            self.x += self.vel
-        else:
-            self.vel = 0     #reach end of map, need life decrease
-
-    def attackDrag(self, dragon, level):
-        if dragon != None and dragon.hp > 0:
-            if (int((time.time() - level.startTime)) - self.lastAttackTime) > 2:       #set time delay here, change the 1
-                dragon.loseLife()     #attacks all drags in a row once collided
-                print("YOUVE BEEN zAPPED")
-                self.lastAttackTime = int((time.time() - level.startTime))
-        else:
-            self.vel = -0.25
-            self.attacking = False
-
-    def collisionWithDrag(self, player1):
-        for dragon in player1.mapDrags:
-            if(dragon.row == self.row):
-                self.targetArr.append(dragon)
-                if((dragon.x + 10) < self.x and (dragon.x + dragon.width - 5) > self.x):
-                    self.vel = 0
-                    self.attacking = True
-                    self.target = dragon
-                    return dragon
+#     def collisionWithDrag(self, player1):
+#         print("detecting")
+#         #if self.attacking and len(self.targetArr) == 0:
+#             #for dragon in player1.mapDrags:
+                
+#         for dragon in player1.mapDrags:
+#             if(dragon.row == self.row):
+#                 self.targetArr.append(dragon)
+#                 if((dragon.x + 10) < self.x and (dragon.x + dragon.width - 5) > self.x):
+#                     self.vel = 0
+#                     self.attacking = True
+#                     self.target = dragon
+#                     return dragon
                 
 class disguisedShroom(special):
     disWalkLeft = [pygame.image.load("./images/shroom/disguisedShroom1.png"), pygame.image.load("./images/shroom/disguisedShroom2.png"), pygame.image.load("./images/shroom/disguisedShroom1.png"), pygame.image.load("./images/shroom/disguisedShroom4.png")]
     def __init__(self, x, y, width, height, row):
         self.disguised = True
+        self.hp = 15
         Shrooms.__init__(self, x, y, width, height, row)
 
     def attackDrag(self, dragon, level):
+        if self.frozen:
+            return
         if dragon != None and dragon.hp > 0:
             if (int((time.time() - level.startTime)) - self.lastAttackTime) > 1:       #set time delay here, change the 1
                 dragon.loseLife()
@@ -203,7 +243,8 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
     t3 = pygame.image.load("./images/shroom/ninjaShroomTele3.png")
     ninjaTele = [t1,t2,t3,t3,t3,t3,t3]
     #^ origin: 7
-    ninjaSlash = [pygame.image.load("./images/shroom/ninjaShroomSlash1.png"), pygame.image.load("./images/shroom/ninjaShroomSlash2.png"), pygame.image.load("./images/shroom/ninjaShroomSlash3.png"), pygame.image.load("./images/shroom/ninjaShroomSlash4.png"), t1,t2,t3,t3,t3,t3,t3]
+    ns1 = pygame.image.load("./images/shroom/ninjaShroomTele3.png")
+    ninjaSlash = [ns1, pygame.image.load("./images/shroom/ninjaShroomSlash2.png"), pygame.image.load("./images/shroom/ninjaShroomSlash3.png"), pygame.image.load("./images/shroom/ninjaShroomSlash4.png"), ns1,ns1,ns1,ns1,ns1,ns1,ns1]
     #^4 + 7 = 11 frames
     def __init__(self, x, y, width, height, row):
         self.hp = 5
@@ -227,8 +268,8 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
                 self.target = newTarget
                 self.move()
                 return newTarget
-        elif self.target == None:    #no target and not teleporting??
-            return
+        # elif self.target == None:    #no target and not teleporting??
+        #     return
         else:     #in front of drag and attack it
             if(self.x == self.target.x + 86 and self.row):
                 self.vel = 0
@@ -246,7 +287,10 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
             self.y = self.target.y + 10
 
     def draw(self, win):
-        if self.teleporting:
+        if self.frozen:
+            print("I FROZE")
+            win.blit(pygame.image.load("./images/shroom/ninjaShroomTele3.png"), (self.x, self.y))
+        elif self.teleporting:
             if self.teleCount + 1 >= 7 * self.teleFactor:
                 self.teleCount = 0
                 self.teleporting = False
@@ -262,6 +306,8 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
         self.walkCount += 1
 
     def attackDrag(self, dragon, level):
+        if self.frozen:
+            return
         if self.target.hp == 1:
             self.target.loseLife()
             self.attacking = False
@@ -308,5 +354,7 @@ class specialShroom(imageButton):
             if mouse_up:
                 #need to change to something like the shop
                 player1.buffing = True
+                player1.usingShroom = self
+                level.removeShroomDrop(self)
         else:
             self.mouse_over = False

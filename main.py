@@ -21,17 +21,28 @@ white = (255,255,255)
 icon = pygame.image.load("./images/shroomIcon.png")
 pygame.display.set_icon(icon)
 screen = pygame.display.set_mode((800, 600))  # pix size of screen length x height
-pygame.display.set_caption("guns go pew pew")
+pygame.display.set_caption("Mush Rush")
 gameState = GameState.TITLE
 running = True
 8
-background_color = (192,134,105)      #change to title screen later
+titleBgColor = (95,148,118)      #change to title screen later
 buttonColor = (117,153,138) #for level
+
+instructionBgColor = (232,209,159)
+instructionTextColor = (135,91,73)
+
+levelBgColor = (95,148,118)
+pausedBgColor = (162,190,142)
+goColor = (86,60,57)
+goText = (185,154,134)
+winText = (225,190,122)
 
 titleBg = pygame.image.load('./images/bgs/titledragmush.png')      #need replace!!!!!!!!!!!
 instructionBg = pygame.image.load('./images/bgs/instructionScreen.png')
 levelBg = pygame.image.load('./images/bgs/dragonfield.png')
-gameOverBg = pygame.image.load('./images/bgs/gameOverPlaceholder.jpg')
+gameOverBg = pygame.image.load('./images/bgs/gameOver.png')
+pauseScreen = pygame.image.load('./images/bgs/pauseScreen.png')
+winBg = pygame.image.load('./images/bgs/winScreen.png')
 
 grilledShroom = pygame.image.load('./images/shroom/shiitake.png')
 grilledShroomBig = pygame.image.load('./images/shroom/shiitakeBig.png')
@@ -55,24 +66,24 @@ while running:
 
     if gameState == GameState.TITLE:
         screen.blit(titleBg, (0, 0))
-        level1 = level.Level(1, 10, 60, 5)    #level, mush, time, specialShrooms
-        level2 = level.Level(1, 50, 90, 10)    #level, mush, time
-        level3 = level.Level(1, 70, 110, 15)    #level, mush, time
+        level1 = level.Level(1, 1, 10, 0)    #level, mush, time, specialShrooms
+        level2 = level.Level(1, 1, 10, 0)    #level, mush, time
+        level3 = level.Level(1, 1, 10, 0)    #level, mush, time
 
         allLv = [level1, level2, level3]
         lvIndex = 0
         quitButton = Buttons.textButton(       
-            center_position=(650, 550),
-            font_size=25,
-            bg_rgb=background_color,
+            center_position=(120, 490),
+            font_size=35,
+            bg_rgb=titleBgColor,
             text_rgb= white,
             text="Quit",
             stateChange = GameState.QUIT,
         )
         startButton = Buttons.textButton(
-            center_position=(650, 500),
-            font_size=30,
-            bg_rgb=background_color,
+            center_position=(120, 420),
+            font_size=40,
+            bg_rgb=titleBgColor,
             text_rgb= white,
             text="Start",
             stateChange = GameState.INSTRUCTION,
@@ -89,19 +100,19 @@ while running:
         player1 = player.Player()
         screen.blit(instructionBg, (0, 0))
         returnButton = Buttons.textButton(
-            center_position=(150, 540),
-            font_size=20,
-            bg_rgb=background_color,
-            text_rgb=white,
+            center_position=(215, 530),
+            font_size=25,
+            bg_rgb=instructionBgColor,
+            text_rgb= instructionTextColor,
             text="Return to menu",
             stateChange = GameState.TITLE,
         )
         continueButton = Buttons.textButton(
-            center_position=(650, 535),
+            center_position=(610, 525),
             font_size=30,
-            bg_rgb=background_color,
-            text_rgb=white,
-            text="Continue",
+            bg_rgb=instructionBgColor,
+            text_rgb= instructionTextColor,
+            text="Play!",
             stateChange = GameState.LEVEL,
         )
         instructionButtons = [returnButton, continueButton]
@@ -119,18 +130,18 @@ while running:
             gameState = GameState.GAME_OVER
 
         elif(allLv[lvIndex].paused):
-            screen.fill(background_color)
+            screen.blit(pauseScreen, (0, 0))
             pausedText = Buttons.displayText(       
-                center_position=(400, 320),
+                center_position=(400, 400),
                 font_size=60,
-                bg_rgb=background_color,
+                bg_rgb=pausedBgColor,
                 text_rgb= white,
                 text=f"Paused",
             )
             continueButton = Buttons.textButton(
                 center_position= (400, 500),
                 font_size=30,
-                bg_rgb=background_color,
+                bg_rgb=pausedBgColor,
                 text_rgb=white,
                 text="Continue",
                 stateChange = GameState.LEVEL
@@ -138,7 +149,7 @@ while running:
             quitButton = Buttons.textButton(
                 center_position= (400, 550),
                 font_size=30,
-                bg_rgb=background_color,
+                bg_rgb=pausedBgColor,
                 text_rgb=white,
                 text="Quit",
                 stateChange = GameState.QUIT
@@ -161,7 +172,7 @@ while running:
             pauseButton = Buttons.textButton(                       #change to restart later
                 center_position= (600, 45),
                 font_size=30,
-                bg_rgb=buttonColor,
+                bg_rgb=levelBgColor,
                 text_rgb=white,
                 text="Pause",
                 stateChange = GameState.LEVEL
@@ -169,7 +180,7 @@ while running:
             quitButton = Buttons.textButton(
                 center_position= (715, 45),
                 font_size=30,
-                bg_rgb=buttonColor,
+                bg_rgb=levelBgColor,
                 text_rgb=white,
                 text="Quit",
                 stateChange = GameState.QUIT
@@ -178,21 +189,21 @@ while running:
             lifeDisplay = Buttons.displayText(       
                 center_position=(270, 45),
                 font_size=30,
-                bg_rgb=buttonColor,
+                bg_rgb=levelBgColor,
                 text_rgb= white,
                 text=f"Lives: " + str(player1.lives),
                 )
             timeDisplay = Buttons.displayText(       
                 center_position=(400, 45),
                 font_size=30,
-                bg_rgb=buttonColor,
+                bg_rgb=levelBgColor,
                 text_rgb= white,
                 text=allLv[lvIndex].timerMinSec(),         #replace with timer later
                 )
             grilledDisplay = Buttons.displayText(       
                 center_position=(110, 45),
                 font_size=30,
-                bg_rgb=buttonColor,
+                bg_rgb=levelBgColor,
                 text_rgb= white,
                 text= ": " + str(player1.grilled),
                 )
@@ -231,9 +242,11 @@ while running:
                 pygame.mouse.set_visible(False)
                 if click:
                     x,y = pygame.mouse.get_pos()
-                    if x > 179 and x < 780 and y > 79 and y < 580 and player1.shoppingNum != 0:
-                        player1.buff(x, y)
+                    if x > 179 and x < 780 and y > 79 and y < 580 and player1.buffing == True:
+                        player1.buff(x, y, allLv[lvIndex])
+                        pygame.mouse.set_visible(True)
                     else:
+                        allLv[lvIndex].shroomDrops.append(player1.usingShroom)
                         player1.buffing = False
                         pygame.mouse.set_visible(True)
 
@@ -251,7 +264,8 @@ while running:
 
             for dragon in player1.mapDrags:
                 shroomTarget = dragon.attackChecker(allLv[lvIndex])
-                dragon.attack(allLv[lvIndex], shroomTarget)
+                dragon.attack(allLv[lvIndex], shroomTarget) # attackpart idk
+                dragon.skillUp(allLv[lvIndex])
                 dragon.draw(screen)
 
             for button in levelButtons:
@@ -301,18 +315,18 @@ while running:
     elif gameState == GameState.GAME_OVER:
         screen.blit(gameOverBg, (0, 0))
         titleButton = Buttons.textButton(                 #change to restart later
-            center_position= (400, 400),
+            center_position= (250, 260),
             font_size=30,
-            bg_rgb=buttonColor,
-            text_rgb=white,
+            bg_rgb=goColor,
+            text_rgb=goText,
             text="Title",
             stateChange = GameState.TITLE
         )
         quitButton = Buttons.textButton(
-            center_position= (400, 450),
+            center_position= (550, 260),
             font_size=30,
-            bg_rgb=buttonColor,
-            text_rgb=white,
+            bg_rgb=goColor,
+            text_rgb=goText,
             text="Quit",
             stateChange = GameState.QUIT
         )
@@ -325,31 +339,30 @@ while running:
             button.draw(screen)
 
     elif gameState == GameState.WIN:
-        screen.blit(titleBg, (0,0))
-        winText = Buttons.displayText(       
-            center_position=(400, 320),
-            font_size=60,
-            bg_rgb=background_color,
-            text_rgb= white,
-            text=f"You Win!",
-        )
+        screen.blit(winBg, (0,0))
+        # winText = Buttons.displayText(       
+        #     center_position=(400, 320),
+        #     font_size=60,
+        #     bg_rgb=titleBgColor,
+        #     text_rgb= white,
+        #     text=f"You Win!",
+        # )
         titleButton = Buttons.textButton(
-            center_position= (400, 500),
+            center_position= (400, 470),
             font_size=30,
-            bg_rgb=background_color,
+            bg_rgb=winText,
             text_rgb=white,
             text="Title",
             stateChange = GameState.TITLE
         )
         quitButton = Buttons.textButton(
-            center_position= (400, 550),
+            center_position= (400, 530),
             font_size=30,
-            bg_rgb=background_color,
+            bg_rgb=winText,
             text_rgb=white,
             text="Quit",
             stateChange = GameState.QUIT
         )
-        winText.draw(screen)
         winButtons = [titleButton, quitButton]
         for button in winButtons:
             nextState = button.update(pygame.mouse.get_pos(), click)

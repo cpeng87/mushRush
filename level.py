@@ -10,7 +10,7 @@ class Level():
         self.mushNum = mushNum
         self.timeLimit = timeLimit
         self.levelNum = levelNum
-        self.listShroom = [shroom.Sparky(800, rowPix[0], 77, 54, 0)]       #holds all the shrooms
+        self.listShroom = []       #holds all the shrooms
         self.timeRemaining = timeLimit
         self.startTime = 0
         self.completed = False
@@ -21,7 +21,7 @@ class Level():
         self.spawnTime = [60, 59, 58]
         self.specialSpawn = [] #special shroomos get a special time(10sec delay)
 
-        self.shroomDrops= [shroom.droppedShroom(500,500), shroom.specialShroom(600,500)]
+        self.shroomDrops= [shroom.droppedShroom(500,500), shroom.specialShroom(400,500)]
 
         while(mushNum > 0):   #change spawn array, possibly hard code?
            self.spawnTime.append(random.randint(0, self.timeLimit))
@@ -64,11 +64,11 @@ class Level():
         for specialTime in self.specialSpawn:
             if(self.timeRemaining == specialTime):
                 spawnRow = random.randint(0,4)
-                spawnType = random.randint(0,2)  #determines type of special shroom
+                spawnType = random.randint(0,1)  #determines type of special shroom
                 print(spawnType)
-                if spawnType == 0 or spawnType == 1:
+                if spawnType == 0:
                     mush = shroom.disguisedShroom(800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
-                elif spawnType == 2:
+                elif spawnType == 1:
                     mush = shroom.ninjaShroom(800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
                 self.specialSpawn.remove(specialTime)
                 self.listShroom.append(mush)
