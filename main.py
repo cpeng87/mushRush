@@ -26,7 +26,7 @@ gameState = GameState.TITLE
 running = True
 8
 titleBgColor = (95,148,118)      #change to title screen later
-buttonColor = (117,153,138) #for level
+# buttonColor = (117,153,138) #for level
 
 instructionBgColor = (232,209,159)
 instructionTextColor = (135,91,73)
@@ -43,6 +43,8 @@ levelBg = pygame.image.load('./images/bgs/dragonfield.png')
 gameOverBg = pygame.image.load('./images/bgs/gameOver.png')
 pauseScreen = pygame.image.load('./images/bgs/pauseScreen.png')
 winBg = pygame.image.load('./images/bgs/winScreen.png')
+
+clearPopup = pygame.image.load('./images/bgs/clearPopup.png')
 
 grilledShroom = pygame.image.load('./images/shroom/shiitake.png')
 grilledShroomBig = pygame.image.load('./images/shroom/shiitakeBig.png')
@@ -290,27 +292,41 @@ while running:
                 screen.blit(specialMush, cursorRect) #draw the cursor
             
             if(allLv[lvIndex].doneChecker()):
+                screen.blit(clearPopup, (290, 225))
                 nextLvButton = Buttons.textButton(
-                center_position= (560, 550),
-                font_size = 30,
-                bg_rgb=buttonColor,
-                text_rgb=white,
-                text="Continue to next level",
-                stateChange = GameState.LEVEL
+                    center_position= (480, 350),
+                    font_size = 30,
+                    bg_rgb=levelBgColor,
+                    text_rgb=white,
+                    text="Continue",
+                    stateChange = GameState.LEVEL
                 )
-                nextState = nextLvButton.update(pygame.mouse.get_pos(), click)
-                if lvIndex > len(allLv) - 2:
-                    gameState = GameState.WIN
-
-                nextLvButton.draw(screen)               #something weird, button still being drawn
-                if nextState is not None:     #reseting values for next level
-                    lvIndex = lvIndex + 1
-                    allLv[lvIndex].startTime = time.time()
-                    player1.mapDrags = []
-                    player1.grilled = 20
-                    player1.lives = 5
-                    player1.selecting = False
-                    player1.grid = [[0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]]
+                titleButton = Buttons.textButton(
+                    center_position= (480, 390),
+                    font_size = 30,
+                    bg_rgb=levelBgColor,
+                    text_rgb=white,
+                    text="Title",
+                    stateChange = GameState.TITLE
+                )
+                nextLvButtons = [titleButton, nextLvButton]
+                for button in nextLvButtons:
+                    nextState = button.update(pygame.mouse.get_pos(), click)
+                    if lvIndex > len(allLv) - 2:
+                        gameState = GameState.WIN
+                    elif nextState == GameState.LEVEL:
+                        lvIndex = lvIndex + 1
+                        allLv[lvIndex].startTime = time.time()
+                        player1.mapDrags = []
+                        player1.grilled = 20
+                        player1.lives = 5
+                        player1.selecting = False
+                        player1.grid = [[0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]]
+                        gameState = nextState
+                    elif nextState is not None:
+                        gameState = nextState
+                for button in nextLvButtons:
+                    button.draw(screen)
 
     elif gameState == GameState.GAME_OVER:
         screen.blit(gameOverBg, (0, 0))
