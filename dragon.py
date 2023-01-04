@@ -104,30 +104,35 @@ class Laser(Projectile):
                         otherShroom.loseHp()
                 shroom.loseHp()
                 self.lastAttackTime = int((time.time() - self.startTime))
+
     def draw(self, win):
         win.blit(self.laserAnimation[0], (self.x, self.y - 10))
+
 class RedLaser(Laser):
     redLaserAnimation = [pygame.image.load('./images/dragon/laserStillRed.png')]
-    redLaserAnimationr1 = [pygame.image.load('./images/dragon/laserStillRed.png')]
-    redLaserAnimationr5 = [pygame.image.load('./images/dragon/laserStillRed.png')]
+    redLaserAnimationr0 = [pygame.image.load('./images/dragon/laserStillRed0.png')]
     def __init__(self, x, y, width, height, row, level):
         self.hitRows = []
         if row == 0:
             self.hitRows = [0, 1]
         elif row == 5:
-            self.otherRow = [5, 4]
-        self.otherRow = [row - 1, row, row + 1]
+            self.hitRows = [5, 4]
+        else:
+            self.hitRows = [row - 1, row, row + 1]
         Laser.__init__(self, x, y, width, height, row, level)
+
     def laserAttack(self, shroom):
-        if shroom != None and shroom.hp > 0:
-            if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) > 5:
-                for otherShroom in self.level.listShroom:
-                    if otherShroom.x >= shroom.x and otherShroom.row in self.hitRows:
-                        otherShroom.loseHp()
-                shroom.loseHp()
-                self.lastAttackTime = int((time.time() - self.startTime))
+        if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) > 5:
+            for otherShroom in self.level.listShroom:
+                if otherShroom.x >= self.x and otherShroom.row in self.hitRows:
+                    otherShroom.loseHp()
+            self.lastAttackTime = int((time.time() - self.startTime))
+
     def draw(self, win):
-        win.blit(self.redLaserAnimation[0], (self.x, self.y - 90))
+        if self.row == 0:
+            win.blit(self.redLaserAnimationr0[0], (self.x, self.y - 90))
+        else:
+            win.blit(self.redLaserAnimation[0], (self.x, self.y - 90))
 
 class Dragon(object):
     def __init__(self, row, col, width, height, cost):
@@ -305,14 +310,14 @@ class Snailey(Dragon):    #lazer go brrr
         else:
             self.laser = Laser(self.x + 120, self.y + 30, 800 - self.x + 95, 50, self.row, level)
 
-    def skillUp(self, level):    #slow with longer laser duration???
+    def skillUp(self, level):
         if self.skill and self.skillStart == -1:
             self.laserLength = 10
             self.skillStart = time.time()
-        elif int((time.time() - self.skillStart)) > 5 and self.skill:  #problem code
+        elif int((time.time() - self.skillStart)) > 5 and self.skill:
             self.skill = False
             self.skillStart = -1
-            # self.laser = None
+            self.laser = None
 
 class Pebble(Dragon):     #tanky tank is tanky
     chill = pygame.image.load('./images/dragon/pebble.png')

@@ -57,6 +57,7 @@ class Shrooms(object):
             self.vel = 0     #reach end of map, need life decrease
 
     def loseHp(self):
+        print("ouchie")
         self.hp = self.hp - 1
 
     def attackPlayer(self, player1):
