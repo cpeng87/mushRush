@@ -12,6 +12,7 @@ class Shrooms(object):
     m5 = pygame.image.load("./images/shroom/mushAttack5.png")
     m6 = pygame.image.load("./images/shroom/mushAttack6.png")
     mushAttack = [m1,m1,m1,m1,m1,m1,m1,m1,m2,m3,m3,m4,m5,m6,m4,m3,m3,m2]
+    mushFreeze = pygame.image.load("./images/shroom/mushroomFroze.png")
     #^18sprites 
 
     #to make a shroom = Shrooms(5, 100, 410, 64, 64, 450)
@@ -46,10 +47,10 @@ class Shrooms(object):
             win.blit(self.mushAttack[self.attackCount // 7], (self.x - 12, self.y -35))
             self.attackCount = self.attackCount + 1
         else:
-            win.blit(self.walkLeft[0], (self.x, self.y))
+            win.blit(self.mushFreeze, (self.x, self.y))
         self.walkCount += 1
 
-    def move(self):    #need to add if collide with a draggo
+    def move(self):
         if self.x + self.vel > self.path[1]:
             self.x += self.vel
         else:
@@ -185,6 +186,7 @@ class special(Shrooms):
                 
 class disguisedShroom(special):
     disWalkLeft = [pygame.image.load("./images/shroom/disguisedShroom1.png"), pygame.image.load("./images/shroom/disguisedShroom2.png"), pygame.image.load("./images/shroom/disguisedShroom1.png"), pygame.image.load("./images/shroom/disguisedShroom4.png")]
+    disFreeze = pygame.image.load("./images/shroom/disguisedShroomFroze.png")
     def __init__(self, x, y, width, height, row):
         self.disguised = True
         self.hp = 15
@@ -224,7 +226,7 @@ class disguisedShroom(special):
                 win.blit(self.disWalkLeft[self.walkCount // self.aniMultiWalk], (self.x, self.y)) #x
                 self.walkCount = self.walkCount + 1
             else:
-                win.blit(self.disWalkLeft[0], (self.x, self.y))
+                win.blit(self.disFreeze, (self.x, self.y))
             self.walkCount += 1
         else:
             if self.vel != 0:
@@ -234,7 +236,7 @@ class disguisedShroom(special):
                 win.blit(self.mushAttack[self.attackCount // 7], (self.x - 12, self.y -35))
                 self.attackCount = self.attackCount + 1
             else:
-                win.blit(self.walkLeft[0], (self.x, self.y))
+                win.blit(self.disFreeze, (self.x, self.y))
             self.walkCount += 1
 
 class ninjaShroom(special):    #it still attacks after it has been manually removed haha, need new method
@@ -246,6 +248,7 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
     ns1 = pygame.image.load("./images/shroom/ninjaShroomTele3.png")
     ninjaSlash = [ns1, pygame.image.load("./images/shroom/ninjaShroomSlash2.png"), pygame.image.load("./images/shroom/ninjaShroomSlash3.png"), pygame.image.load("./images/shroom/ninjaShroomSlash4.png"), ns1,ns1,ns1,ns1,ns1,ns1,ns1]
     #^4 + 7 = 11 frames
+    ninjaFreeze = pygame.image.load("./images/shroom/ninjaShroomFroze.png")
     def __init__(self, x, y, width, height, row):
         self.hp = 5
         self.vel = 0
@@ -288,8 +291,7 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
 
     def draw(self, win):
         if self.frozen:
-            print("I FROZE")
-            win.blit(pygame.image.load("./images/shroom/ninjaShroomTele3.png"), (self.x, self.y))
+            win.blit(self.ninjaFreeze, (self.x, self.y))
         elif self.teleporting:
             if self.teleCount + 1 >= 7 * self.teleFactor:
                 self.teleCount = 0

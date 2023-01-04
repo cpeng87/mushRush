@@ -46,10 +46,10 @@ class Fireball(Projectile):
 
     def draw(self, win):
         self.move()
-        if self.animationCount + 1 >= 160:    #x*numSprites, x is how many times a frame is played
+        if self.animationCount + 1 >= 80:    #x*numSprites, x is how many times a frame is played
             self.animationCount = 0
         if self.vel != 0:
-            win.blit(self.fireballAnimation[self.animationCount // 40], (self.x, self.y)) #x
+            win.blit(self.fireballAnimation[self.animationCount // 20], (self.x, self.y)) #x
             self.animationCount = self.animationCount + 1
         else:
             win.blit(self.fireballAnimation[0], (self.x, self.y))
@@ -66,25 +66,15 @@ class Iceball(Projectile):
     def iceballAttack(self, shroom):
         if(self.x < shroom.x + 10 and self.x > shroom.x - 10 and self.row == shroom.row):
             shroom.loseHp()
-            shroom.frozen = True
-            shroom.vel = 0
-            print("slowed")
+            if shroom.frozen == False:
+                shroom.vel = 0
+                shroom.frozen = True
+                self.freezeTime = time.time()
             return True
-
-        # if self.skill and self.skillStart == -1:
-        #     self.skillStart = time.time()
-        #     for shroom in level.listShroom:
-        #         shroom.vel = 0
-        #         shroom.frozen = True
-        # elif int((time.time() - self.skillStart)) > 3:     #3sec board freeze
-        #     self.skill = False
-        #     self.skillStart = -1
-        #     for shroom in level.listShroom:
-        #         if isinstance(shroom, ninjaShroom):
-        #             shroom.vel = 0     #this might make all the mushrooms pacifist
-        #         else:
-        #             shroom.vel = -0.25
-        #         shroom.frozen = False
+        elif shroom.frozen == True and int((time.time() - self.freezeTime)) > 1:
+            shroom.frozen = False
+            shroom.vel = -0.25
+            self.freezeTime = 0
 
     def draw(self, win):
         self.move()
@@ -98,7 +88,7 @@ class Iceball(Projectile):
         self.animationCount += 1
 
 class Laser(Projectile):
-    laserAnimation= [pygame.image.load('./images/dragon/laserStill.png')]    #need actual animation later
+    laserAnimation = [pygame.image.load('./images/dragon/laserStill.png')]    #need actual animation later
     def __init__(self, x, y, width, height, row, level):
         self.vel = 0
         self.startTime = time.time()
@@ -108,14 +98,36 @@ class Laser(Projectile):
 
     def laserAttack(self, shroom):
         if shroom != None and shroom.hp > 0:
-            if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) > 5:
+            if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) > 5: #passes this if statement
                 for otherShroom in self.level.listShroom:
                     if otherShroom.x >= shroom.x and otherShroom.row == shroom.row:
                         otherShroom.loseHp()
                 shroom.loseHp()
                 self.lastAttackTime = int((time.time() - self.startTime))
     def draw(self, win):
-        win.blit(self.laserAnimation[0], (self.x, self.y - 15))
+        win.blit(self.laserAnimation[0], (self.x, self.y - 10))
+class RedLaser(Laser):
+    redLaserAnimation = [pygame.image.load('./images/dragon/laserStillRed.png')]
+    redLaserAnimationr1 = [pygame.image.load('./images/dragon/laserStillRed.png')]
+    redLaserAnimationr5 = [pygame.image.load('./images/dragon/laserStillRed.png')]
+    def __init__(self, x, y, width, height, row, level):
+        self.hitRows = []
+        if row == 0:
+            self.hitRows = [0, 1]
+        elif row == 5:
+            self.otherRow = [5, 4]
+        self.otherRow = [row - 1, row, row + 1]
+        Laser.__init__(self, x, y, width, height, row, level)
+    def laserAttack(self, shroom):
+        if shroom != None and shroom.hp > 0:
+            if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) > 5:
+                for otherShroom in self.level.listShroom:
+                    if otherShroom.x >= shroom.x and otherShroom.row in self.hitRows:
+                        otherShroom.loseHp()
+                shroom.loseHp()
+                self.lastAttackTime = int((time.time() - self.startTime))
+    def draw(self, win):
+        win.blit(self.redLaserAnimation[0], (self.x, self.y - 90))
 
 class Dragon(object):
     def __init__(self, row, col, width, height, cost):
@@ -244,8 +256,6 @@ class Kaboomo(Dragon):    #suicide draggo
 
     def skillUp(self, level):
         return
-    
-    #def skill(self): #increase radius of attack
 
 class Snailey(Dragon):    #lazer go brrr
     s1 = pygame.image.load('./images/dragon/snailey1.png')
@@ -272,30 +282,41 @@ class Snailey(Dragon):    #lazer go brrr
             self.laser.draw(win)
 
     def attack(self, level, firstShroom):          #i hate this method but its fine
+        if self.skill:
+            if isinstance(self.laser, RedLaser) == False or self.laser == None:
+                self.laserSpawn(level)
+                self.laserStart = time.time()
         if self.attacking:
-            if self.laser == None and int(time.time() - self.laserStop) > 3:    #change cd of laser
+            if self.laser == None and int(time.time() - self.laserStop) > 5:    #change cd of laser
                 self.laserStart = time.time()   #fix timer
-                self.laser = self.laserSpawn(firstShroom.row, level)
+                self.laserSpawn(level)
                 self.lazering = True
-            if self.laser != None:
-                if (int((time.time() - self.laser.startTime)) > 1 and self.hp > 0):   #laser lasts for 4 sec
+            elif self.laser != None:
+                if (int((time.time() - self.laserStart)) > 2 or self.hp <= 0):   #laser duration
                     self.lazering == False
                     self.laser = None
                     self.laserStop = time.time()     #time when the laser stops
-            if self.laser != None:
-                self.laser.laserAttack(firstShroom)
-                if(firstShroom == None or firstShroom.hp == 0):
-                    self.laser = None
+        if self.laser != None:
+            self.laser.laserAttack(firstShroom)
 
-    def laserSpawn(self, row, level):
-        self.laser = Laser(self.x + 120, self.y + 30, 800 - self.x + 95, 50, row, level)
-        return self.laser
+    def laserSpawn(self, level):
+        if self.skill:
+            self.laser = RedLaser(self.x + 120, self.y + 30, 800 - self.x + 95, 50, self.row, level)
+        else:
+            self.laser = Laser(self.x + 120, self.y + 30, 800 - self.x + 95, 50, self.row, level)
 
     def skillUp(self, level):    #slow with longer laser duration???
-        return
+        if self.skill and self.skillStart == -1:
+            self.laserLength = 10
+            self.skillStart = time.time()
+        elif int((time.time() - self.skillStart)) > 5 and self.skill:  #problem code
+            self.skill = False
+            self.skillStart = -1
+            # self.laser = None
 
 class Pebble(Dragon):     #tanky tank is tanky
     chill = pygame.image.load('./images/dragon/pebble.png')
+    invulnerable = pygame.image.load('./images/dragon/pebbleInvul.png')
     def __init__(self, row, col, width, height, cost):
         self.hp = 15
         self.damageTaken = 1
@@ -303,7 +324,10 @@ class Pebble(Dragon):     #tanky tank is tanky
         self.attacking = False
 
     def draw(self, win):
-        win.blit(self.chill, (self.x, self.y))
+        if (self.damageTaken == 0):
+            win.blit(self.invulnerable, (self.x, self.y))
+        else:
+            win.blit(self.chill, (self.x, self.y))
 
     def loseLife(self):
         self.hp = self.hp - self.damageTaken
@@ -312,12 +336,10 @@ class Pebble(Dragon):     #tanky tank is tanky
         if self.skill and self.skillStart == -1:
             self.skillStart = time.time()
             self.damageTaken = 0
-        elif int((time.time() - self.skillStart)) > 5:
+        elif int((time.time() - self.skillStart)) > 10:
             self.skill = False
             self.skillStart = -1
             self.damageTaken = 1
-
-    #def skill(self.win):   no damage taken
 
 class Lani(Dragon):    #fireball drag
     l1 = pygame.image.load('./images/dragon/lani1.png')
@@ -333,7 +355,7 @@ class Lani(Dragon):    #fireball drag
         Dragon.__init__(self, row, col, width, height, cost)
     
     def iceballSpawn(self, level):
-        if (int((time.time() - level.startTime)) - self.lastAttackTime) > 1 and self.hp > 0:       #set time delay here, change the 1
+        if (int((time.time() - level.startTime)) - self.lastAttackTime) > 2 and self.hp > 0:       #set time delay here, change the 1
             self.iceballs.append(Iceball(self.x + 85, self.y + 50, 25, 19, self.row))
             self.lastAttackTime = int((time.time() - level.startTime))
             return self.iceballs[0]
@@ -366,7 +388,7 @@ class Lani(Dragon):    #fireball drag
             for shroom in level.listShroom:
                 shroom.vel = 0
                 shroom.frozen = True
-        elif int((time.time() - self.skillStart)) > 3:     #3sec board freeze
+        elif int((time.time() - self.skillStart)) > 3 and self.skill:     #3sec board freeze
             self.skill = False
             self.skillStart = -1
             for shroom in level.listShroom:

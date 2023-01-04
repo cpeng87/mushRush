@@ -26,7 +26,6 @@ gameState = GameState.TITLE
 running = True
 8
 titleBgColor = (95,148,118)      #change to title screen later
-# buttonColor = (117,153,138) #for level
 
 instructionBgColor = (232,209,159)
 instructionTextColor = (135,91,73)
@@ -68,7 +67,7 @@ while running:
 
     if gameState == GameState.TITLE:
         screen.blit(titleBg, (0, 0))
-        level1 = level.Level(1, 1, 10, 0)    #level, mush, time, specialShrooms
+        level1 = level.Level(1, 1, 1, 0)    #level, mush, time, specialShrooms
         level2 = level.Level(1, 1, 10, 0)    #level, mush, time
         level3 = level.Level(1, 1, 10, 0)    #level, mush, time
 
@@ -356,13 +355,6 @@ while running:
 
     elif gameState == GameState.WIN:
         screen.blit(winBg, (0,0))
-        # winText = Buttons.displayText(       
-        #     center_position=(400, 320),
-        #     font_size=60,
-        #     bg_rgb=titleBgColor,
-        #     text_rgb= white,
-        #     text=f"You Win!",
-        # )
         titleButton = Buttons.textButton(
             center_position= (400, 470),
             font_size=30,
