@@ -269,6 +269,9 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
         Shrooms.__init__(self, x, y, width, height, row)
 
     def collisionWithDrag(self, player1):
+        if self.target not in player1.mapDrags:
+            self.teleporting = True
+            self.target = None
         if self.teleporting:   #probs causes the glitching in the beginning
             if len(player1.mapDrags) == 0 and self.target == None:     #player attack
                 self.move()
@@ -296,6 +299,7 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
             self.final = time.time()
         elif self.target.x + 86 != self.x or self.target.y != self.y:    #autual teleport
             self.x = self.target.x + 86
+            self.row = self.target.row
             self.y = self.target.y + 10
 
     def draw(self, win):
@@ -324,7 +328,6 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
             self.attacking = False
             self.teleporting = True
             self.target = None
-
         elif self.target != None and self.target.hp > 0:
             if(int((time.time() - level.startTime)) - self.lastAttackTime) > 1:       #set time delay here, change the 1
                 self.target.loseLife()

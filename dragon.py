@@ -186,7 +186,7 @@ class Puffs(Dragon):    #fireball drag
     puffs4 = pygame.image.load('./images/dragon/puffs4.png')
     #15frames
     def __init__(self, row, col, width, height, cost):
-        self.hp = 10
+        self.hp = 20
         self.fireballs = []
         self.lastAttackTime = 0
         self.animationCount = 0
@@ -195,7 +195,7 @@ class Puffs(Dragon):    #fireball drag
     
     def fireballSpawn(self, level):
         if (int((time.time() - level.startTime) * 100) - self.lastAttackTime) > self.fireballCd and self.hp > 0:       #set time delay here, change the 1
-            self.fireballs.append(Fireball(self.x + 85, self.y + 50, 25, 19, self.row))
+            self.fireballs.append(Fireball(self.x + 50, self.y + 50, 25, 19, self.row))
             self.lastAttackTime = int((time.time() - level.startTime) * 100)
             self.launching = True
             return self.fireballs[0]
