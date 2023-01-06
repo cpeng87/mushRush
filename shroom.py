@@ -38,6 +38,9 @@ class Shrooms(object):
 
     def draw(self, win):
         self.move()
+        if self.frozen or self.miniFreeze:
+            win.blit(self.mushFreeze, (self.x, self.y))
+            return
         if self.walkCount + 1 >= self.aniMultiWalk * 4:    #x*numSprites, x is how many times a frame is played
             self.walkCount = 0
         if self.attackCount + 1 >= 126:
@@ -45,11 +48,10 @@ class Shrooms(object):
         if self.vel != 0:
             win.blit(self.walkLeft[self.walkCount // self.aniMultiWalk], (self.x, self.y)) #x
             self.walkCount = self.walkCount + 1
+            return
         elif self.attacking:
             win.blit(self.mushAttack[self.attackCount // 7], (self.x - 12, self.y -35))
             self.attackCount = self.attackCount + 1
-        else:
-            win.blit(self.mushFreeze, (self.x, self.y))
         self.walkCount += 1
 
     def move(self):

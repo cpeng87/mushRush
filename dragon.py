@@ -186,7 +186,7 @@ class Puffs(Dragon):    #fireball drag
     puffs4 = pygame.image.load('./images/dragon/puffs4.png')
     #15frames
     def __init__(self, row, col, width, height, cost):
-        self.hp = 20
+        self.hp = 10
         self.fireballs = []
         self.lastAttackTime = 0
         self.animationCount = 0
@@ -349,7 +349,7 @@ class Pebble(Dragon):     #tanky tank is tanky
     chill = pygame.image.load('./images/dragon/pebble.png')
     invulnerable = pygame.image.load('./images/dragon/pebbleInvul.png')
     def __init__(self, row, col, width, height, cost):
-        self.hp = 15
+        self.hp = 30
         self.damageTaken = 1
         Dragon.__init__(self, row, col, width, height, cost)
         self.attacking = False
@@ -379,7 +379,7 @@ class Lani(Dragon):    #fireball drag
     chilling = [l1,l1,l1,l1,l1,l1,l2,l3,l3,l3,l2,]
     #11frames
     def __init__(self, row, col, width, height, cost):
-        self.hp = 10
+        self.hp = 15
         self.iceballs = []
         self.lastAttackTime = 0
         self.animationCount = 0
@@ -389,7 +389,7 @@ class Lani(Dragon):    #fireball drag
     def iceballSpawn(self, level):
         self.timeTicker = int((time.time() - level.startTime)) - self.lastAttackTime
         if (int((time.time() - level.startTime)) - self.lastAttackTime) > 2 and self.hp > 0:       #set time delay here, change the 1
-            self.iceballs.append(Iceball(self.x + 85, self.y + 50, 25, 19, self.row))
+            self.iceballs.append(Iceball(self.x + 50, self.y + 50, 25, 19, self.row))
             self.lastAttackTime = int((time.time() - level.startTime))
             return self.iceballs[0]
 
@@ -426,7 +426,7 @@ class Lani(Dragon):    #fireball drag
     def skillUp(self, level):
         if self.skill and self.skillStart == -1:
             self.skillStart = time.time()
-            for shroom in level.listShroom:
+            for shroom in level.listShroom:   #not freezing the ones attacking lani
                 shroom.vel = 0
                 shroom.frozen = True
         elif int((time.time() - self.skillStart)) > 3 and self.skill:     #3sec board freeze
