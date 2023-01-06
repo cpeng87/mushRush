@@ -33,6 +33,8 @@ class Shrooms(object):
         self.target = None
         self.aniMultiWalk = 30
         self.frozen = False
+        self.miniFreeze = False
+        self.freezeTime = -1
 
     def draw(self, win):
         self.move()
@@ -51,6 +53,9 @@ class Shrooms(object):
         self.walkCount += 1
 
     def move(self):
+        if self.miniFreeze == True and int((time.time() - self.freezeTime)) > 1:
+            self.miniFreeze = False
+            self.vel = -0.25
         if self.x + self.vel > self.path[1]:
             self.x += self.vel
         else:
@@ -64,7 +69,7 @@ class Shrooms(object):
         player1.loseLife()
 
     def attackDrag(self, dragon, level):
-        if self.frozen:
+        if self.frozen or self.miniFreeze:
             return
         elif dragon != None and dragon.hp > 0:
             if (int((time.time() - level.startTime)) - self.lastAttackTime) > 1:       #set time delay here, change the 1
@@ -243,12 +248,15 @@ class disguisedShroom(special):
 class ninjaShroom(special):    #it still attacks after it has been manually removed haha, need new method
     t1= pygame.image.load("./images/shroom/ninjaShroomTele1.png")
     t2 = pygame.image.load("./images/shroom/ninjaShroomTele2.png")
-    t3 = pygame.image.load("./images/shroom/ninjaShroomTele3.png")
+    t3 = pygame.image.load("./images/shroom/ninjaShroomTele3.png")   #resting
     ninjaTele = [t1,t2,t3,t3,t3,t3,t3]
     #^ origin: 7
-    ns1 = pygame.image.load("./images/shroom/ninjaShroomTele3.png")
-    ninjaSlash = [ns1, pygame.image.load("./images/shroom/ninjaShroomSlash2.png"), pygame.image.load("./images/shroom/ninjaShroomSlash3.png"), pygame.image.load("./images/shroom/ninjaShroomSlash4.png"), ns1,ns1,ns1,ns1,ns1,ns1,ns1]
+    ns1 = pygame.image.load("./images/shroom/ninjaShroomCombo1.png")
+    ns2 = pygame.image.load("./images/shroom/ninjaShroomCombo2.png")
+    ns3 = pygame.image.load("./images/shroom/ninjaShroomCombo3.png")
     #^4 + 7 = 11 frames
+    ninjaSlash = [ns1,ns2,ns3,t3,t3,t3,t3,t3,t3,t3,t3]
+    
     ninjaFreeze = pygame.image.load("./images/shroom/ninjaShroomFroze.png")
     def __init__(self, x, y, width, height, row):
         self.hp = 5
@@ -297,15 +305,15 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
             if self.teleCount + 1 >= 7 * self.teleFactor:
                 self.teleCount = 0
                 self.teleporting = False
-            win.blit(self.ninjaTele[self.teleCount // self.teleFactor], (self.x, self.y))
+            win.blit(self.ninjaTele[self.teleCount // self.teleFactor], (self.x - 30, self.y))
             self.teleCount += 1
         elif self.attackCount + 1 >= 77:
             self.attackCount = 0
         elif self.attacking:
-            win.blit(self.ninjaSlash[self.attackCount // 7], (self.x, self.y))
+            win.blit(self.ninjaSlash[self.attackCount // 7], (self.x - 30, self.y))
             self.attackCount = self.attackCount + 1
-        #else:
-            #win.blit(self.ninjaSlash[0], (self.x, self.y))
+        else:
+            win.blit(self.ninjaSlash[0], (self.x, self.y))
         self.walkCount += 1
 
     def attackDrag(self, dragon, level):

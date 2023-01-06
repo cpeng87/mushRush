@@ -29,14 +29,11 @@ class Player:
         self.shoppingNum = 0
         self.buffing = False
         self.usingShroom = None
-        self.costs = [5, 3, 8, 8, 8, -1]  #puffs, kaboomo, snailey, pebble, lani
+        self.costs = [4, 3, 8, 4, 5, -1]  #puffs, kaboomo, snailey, pebble, lani
 
 
     def buy(self, shroomCost):
-        if self.drags >= 25:
-            print("too many dragons on the field. they like their personal space")
-        else:
-            self.grilled = self.grilled - shroomCost
+        self.grilled = self.grilled - shroomCost
 
     def sell(self, dragCost):
         self.grilled = self.grilled + (dragCost / 2)
