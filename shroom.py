@@ -64,7 +64,6 @@ class Shrooms(object):
             self.vel = 0     #reach end of map, need life decrease
 
     def loseHp(self):
-        print("ouchie")
         self.hp = self.hp - 1
 
     def attackPlayer(self, player1):
@@ -197,7 +196,7 @@ class disguisedShroom(special):
     disFreeze = pygame.image.load("./images/shroom/disguisedShroomFroze.png")
     def __init__(self, x, y, width, height, row):
         self.disguised = True
-        self.hp = 15
+        self.hp = 20
         Shrooms.__init__(self, x, y, width, height, row)
 
     def attackDrag(self, dragon, level):
@@ -261,7 +260,7 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
     
     ninjaFreeze = pygame.image.load("./images/shroom/ninjaShroomFroze.png")
     def __init__(self, x, y, width, height, row):
-        self.hp = 5
+        self.hp = 10
         self.vel = 0
         self.teleporting = True
         self.teleCount = 0
@@ -285,14 +284,12 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
                 self.target = newTarget
                 self.move()
                 return newTarget
-        # elif self.target == None:    #no target and not teleporting??
-        #     return
         else:     #in front of drag and attack it
             if(self.x == self.target.x + 86 and self.row):
                 self.vel = 0
                 self.attacking = True
 
-    def move(self):    #need to add if collide with a draggo
+    def move(self):
         #rando and tele
         if self.x == 152:  #do nothing
             return
@@ -307,19 +304,22 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
     def draw(self, win):
         if self.frozen:
             win.blit(self.ninjaFreeze, (self.x, self.y))
+            return
         elif self.teleporting:
             if self.teleCount + 1 >= 7 * self.teleFactor:
                 self.teleCount = 0
                 self.teleporting = False
-            win.blit(self.ninjaTele[self.teleCount // self.teleFactor], (self.x - 30, self.y))
+            win.blit(self.ninjaTele[self.teleCount // self.teleFactor], (self.x - 50, self.y))
             self.teleCount += 1
-        elif self.attackCount + 1 >= 77:
+            return
+        if self.attackCount + 1 >= 77:
             self.attackCount = 0
         elif self.attacking:
-            win.blit(self.ninjaSlash[self.attackCount // 7], (self.x - 30, self.y))
+            win.blit(self.ninjaSlash[self.attackCount // 7], (self.x - 50, self.y))
             self.attackCount = self.attackCount + 1
         else:
-            win.blit(self.ninjaSlash[0], (self.x, self.y))
+            win.blit(self.t3, (self.x, self.y))
+            self.attacking = True
         self.walkCount += 1
 
     def attackDrag(self, dragon, level):
@@ -331,7 +331,7 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
             self.teleporting = True
             self.target = None
         elif self.target != None and self.target.hp > 0:
-            if(int((time.time() - level.startTime)) - self.lastAttackTime) > 1:       #set time delay here, change the 1
+            if(int((time.time() - level.startTime)) - self.lastAttackTime) > 1:
                 self.target.loseLife()
                 self.lastAttackTime = int((time.time() - level.startTime))
         else:
@@ -340,7 +340,7 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
             self.target = None
 
     def attackPlayer(self):
-        if(int((time.time() - self.final) * 10)) >= 7:      #1 sec delay of final attack so player can see it
+        if(int((time.time() - self.final) * 10)) >= 7:
             self.x = 148
 
 class droppedShroom(imageButton):
@@ -368,7 +368,6 @@ class specialShroom(imageButton):
         if self.rect.collidepoint(mouse_pos):
             self.mouse_over = True
             if mouse_up:
-                #need to change to something like the shop
                 player1.buffing = True
                 player1.usingShroom = self
                 level.removeShroomDrop(self)

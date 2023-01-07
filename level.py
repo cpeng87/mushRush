@@ -65,7 +65,6 @@ class Level():
             if(self.timeRemaining == specialTime):
                 spawnRow = random.randint(0,4)
                 spawnType = random.randint(0,1)  #determines type of special shroom
-                print(spawnType)
                 if spawnType == 0:
                     mush = shroom.disguisedShroom(800, rowPix[spawnRow], 77, 54, spawnRow)  #last is spawnrow
                 elif spawnType == 1:

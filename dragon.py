@@ -77,10 +77,6 @@ class Iceball(Projectile):
                 shroom.miniFreeze = True
                 shroom.freezeTime = time.time()
             return True
-        # elif shroom.frozen == True and int((time.time() - self.freezeTime)) > 1:
-        #     shroom.frozen = False
-        #     shroom.vel = -0.25
-        #     self.freezeTime = 0
 
     def draw(self, win):
         self.move()
@@ -89,22 +85,27 @@ class Iceball(Projectile):
         if self.vel != 0:
             win.blit(self.iceballAnimation[self.animationCount // 20], (self.x, self.y - 15)) #x
             self.animationCount = self.animationCount + 1
+            return
         else:
             win.blit(self.iceballAnimation[0], (self.x, self.y - 15))
         self.animationCount += 1
 
 class Laser(Projectile):
-    laserAnimation = [pygame.image.load('./images/dragon/laserStill.png')]    #need actual animation later
+    l1 = pygame.image.load('./images/dragon/laser1.png')
+    l2 = pygame.image.load('./images/dragon/laser2.png')
+    l3 = pygame.image.load('./images/dragon/laser3.png')
+    laserAnimation = [l1,l2,l3,l2]
     def __init__(self, x, y, width, height, row, level):
         self.vel = 0
         self.startTime = time.time()
         self.lastAttackTime = 0
         self.level = level
+        self.animationCount = 0
         Projectile.__init__(self, x, y, width, height, row)
 
     def laserAttack(self, shroom):
         if shroom != None and shroom.hp > 0:
-            if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) > 5: #passes this if statement
+            if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) > 3:
                 for otherShroom in self.level.listShroom:
                     if otherShroom.x >= shroom.x and otherShroom.row == shroom.row:
                         otherShroom.loseHp()
@@ -112,11 +113,21 @@ class Laser(Projectile):
                 self.lastAttackTime = int((time.time() - self.startTime))
 
     def draw(self, win):
-        win.blit(self.laserAnimation[0], (self.x, self.y - 10))
+        if self.animationCount + 1 >= 60:    #x*numSprites, x is how many times a frame is played
+            self.animationCount = 0
+        win.blit(self.laserAnimation[self.animationCount // 15], (self.x, self.y - 10)) #x
+        self.animationCount = self.animationCount + 1
+        self.animationCount += 1
 
 class RedLaser(Laser):
-    redLaserAnimation = [pygame.image.load('./images/dragon/laserStillRed.png')]
-    redLaserAnimationr0 = [pygame.image.load('./images/dragon/laserStillRed0.png')]
+    r1 = pygame.image.load('./images/dragon/laserRed1.png')
+    r2 = pygame.image.load('./images/dragon/laserRed2.png')
+    r3 = pygame.image.load('./images/dragon/laserRed3.png')
+    redLaserAnimation = [r1,r2,r3,r2]
+    r01 = pygame.image.load('./images/dragon/laserStillRed01.png')
+    r02 = pygame.image.load('./images/dragon/laserStillRed02.png')
+    r03 = pygame.image.load('./images/dragon/laserStillRed03.png')
+    redLaserAnimationr0 = [r01,r02,r03,r02]
     def __init__(self, x, y, width, height, row, level):
         self.hitRows = []
         if row == 0:
@@ -135,10 +146,15 @@ class RedLaser(Laser):
             self.lastAttackTime = int((time.time() - self.startTime))
 
     def draw(self, win):
+        if self.animationCount + 1 >= 40:    #x*numSprites, x is how many times a frame is played
+            self.animationCount = 0
         if self.row == 0:
-            win.blit(self.redLaserAnimationr0[0], (self.x, self.y - 90))
+            win.blit(self.redLaserAnimationr0[self.animationCount // 10], (self.x, self.y - 90)) #x
+            self.animationCount = self.animationCount + 2
+            return
         else:
-            win.blit(self.redLaserAnimation[0], (self.x, self.y - 90))
+            win.blit(self.redLaserAnimation[self.animationCount // 10], (self.x, self.y - 90)) #x
+            self.animationCount = self.animationCount + 2
 
 class Dragon(object):
     def __init__(self, row, col, width, height, cost):
@@ -191,10 +207,12 @@ class Puffs(Dragon):    #fireball drag
         self.lastAttackTime = 0
         self.animationCount = 0
         self.fireballCd = 150
+        self.timeTicker = -1
         Dragon.__init__(self, row, col, width, height, cost)
     
     def fireballSpawn(self, level):
-        if (int((time.time() - level.startTime) * 100) - self.lastAttackTime) > self.fireballCd and self.hp > 0:       #set time delay here, change the 1
+        self.timeTicker = int((time.time() - level.startTime) * 100) - self.lastAttackTime
+        if self.timeTicker > self.fireballCd and self.hp > 0:       #set time delay here, change the 1
             self.fireballs.append(Fireball(self.x + 50, self.y + 50, 25, 19, self.row))
             self.lastAttackTime = int((time.time() - level.startTime) * 100)
             self.launching = True
@@ -202,21 +220,15 @@ class Puffs(Dragon):    #fireball drag
         else:
             self.launching = False
 
-    def draw(self, win, level):
-        timeTicker = int((time.time() - level.startTime) * 100) - self.lastAttackTime
-        if timeTicker > self.fireballCd - 10 and timeTicker < self.fireballCd + 10:   # attack anim
+    def draw(self, win):
+        if self.timeTicker > self.fireballCd - 10 and self.timeTicker < self.fireballCd + 10:   # attack anim
             win.blit(self.puffs4, (self.x, self.y))
-        elif timeTicker > self.fireballCd - 20 and timeTicker < self.fireballCd + 20: #puff 3
+        elif self.timeTicker > self.fireballCd - 20 and self.timeTicker < self.fireballCd + 20: #puff 3
             win.blit(self.puffs3, (self.x, self.y))
-        elif timeTicker > self.fireballCd - 30 and timeTicker < self.fireballCd + 30: #puff 2
+        elif self.timeTicker > self.fireballCd - 30 and self.timeTicker < self.fireballCd + 30: #puff 2
             win.blit(self.puffs2, (self.x, self.y))
         else:
             win.blit(self.puffs1, (self.x, self.y))
-        # if self.animationCount + 1 >= 450:    #x*numSprites, x is how many times a frame is played
-        #     self.animationCount = 0
-        # win.blit(self.chilling[self.animationCount // 30], (self.x, self.y)) #x
-        # self.animationCount = self.animationCount + 1
-        # self.animationCount += 1
         for fireball in self.fireballs:
             fireball.draw(win)
 
@@ -227,6 +239,7 @@ class Puffs(Dragon):    #fireball drag
                 if(shroom != None):
                     if(fireball.fireballAttack(shroom)):
                         self.fireballs.remove(fireball)
+
     def skillUp(self, level):
         if self.skill and self.skillStart == -1:
             self.fireballCd = 75
@@ -237,8 +250,18 @@ class Puffs(Dragon):    #fireball drag
             self.fireballCd = 150
             
 class Kaboomo(Dragon):    #suicide draggo
-    flyAni = [pygame.image.load('./images/dragon/kaboomo1.png'), pygame.image.load('./images/dragon/kaboomo2.png'), pygame.image.load('./images/dragon/kaboomo3.png'), pygame.image.load('./images/dragon/kaboomo2.png'), pygame.image.load('./images/dragon/kaboomo5.png')]
-    explodeAni = [pygame.image.load('./images/dragon/explode1.png'), pygame.image.load('./images/dragon/explode2.png'), pygame.image.load('./images/dragon/explode3.png'), pygame.image.load('./images/dragon/explode4.png'), pygame.image.load('./images/dragon/explode5.png'), pygame.image.load('./images/dragon/explode6.png'), pygame.image.load('./images/dragon/explode7.png'), ]
+    flyAni = [pygame.image.load('./images/dragon/kaboomo1.png'),
+        pygame.image.load('./images/dragon/kaboomo2.png'),
+        pygame.image.load('./images/dragon/kaboomo3.png'),
+        pygame.image.load('./images/dragon/kaboomo2.png'),
+        pygame.image.load('./images/dragon/kaboomo5.png')]
+    explodeAni = [pygame.image.load('./images/dragon/explode1.png'),
+        pygame.image.load('./images/dragon/explode2.png'),
+        pygame.image.load('./images/dragon/explode3.png'),
+        pygame.image.load('./images/dragon/explode4.png'),
+        pygame.image.load('./images/dragon/explode5.png'),
+        pygame.image.load('./images/dragon/explode6.png'),
+        pygame.image.load('./images/dragon/explode7.png')]
     #^7 frames
     def __init__(self, row, col, width, height, cost):
         self.hp = 1000
@@ -246,7 +269,7 @@ class Kaboomo(Dragon):    #suicide draggo
         Dragon.__init__(self, row, col, width, height, cost)
         self.attacking = False
 
-    def draw(self, win, level):
+    def draw(self, win):
         if self.attacking == False:
             if self.animationCount + 1 >= 125:    #x*numSprites, x is how many times a frame is played
                 self.animationCount = 0
@@ -289,32 +312,27 @@ class Snailey(Dragon):    #lazer go brrr
     s4 = pygame.image.load('./images/dragon/snailey4.png')
     #15 frames
     def __init__(self, row, col, width, height, cost):
-        self.hp = 10
+        self.hp = 8
         self.animationCount = 0
         self.laser = None
         self.laserStop = 0
         Dragon.__init__(self, row, col, width, height, cost)
 
-    def draw(self, win, level):
+    def draw(self, win):
         timeTicker = int(time.time() - self.laserStop)
         if self.laser != None:   # attack anim
             win.blit(self.s4, (self.x, self.y))
-        # elif self.laser == None and timeTicker > 4 and timeTicker < 6:  #puff 3
-        #     win.blit(self.s3, (self.x, self.y))
         elif self.laser == None and timeTicker > 5 and timeTicker < 7: #puff 2
             win.blit(self.s2, (self.x, self.y))
         else:
             win.blit(self.s1, (self.x, self.y))
-
-        # if self.animationCount + 1 >= 450:    #x*numSprites, x is how many times a frame is played
-        #     self.animationCount = 0
-        # win.blit(self.chilling[self.animationCount // 30], (self.x, self.y + 5)) #x
-        # self.animationCount = self.animationCount + 1
-        # self.animationCount += 1
         if self.laser != None:
             self.laser.draw(win)
 
     def attack(self, level, firstShroom):          #i hate this method but its fine
+        if self.laser != None and firstShroom not in level.listShroom:
+            self.laser = None
+            self.attacking = False
         if self.skill:
             if isinstance(self.laser, RedLaser) == False or self.laser == None:
                 self.laserSpawn(level)
@@ -354,7 +372,7 @@ class Pebble(Dragon):     #tanky tank is tanky
         Dragon.__init__(self, row, col, width, height, cost)
         self.attacking = False
 
-    def draw(self, win, level):
+    def draw(self, win):
         if (self.damageTaken == 0):
             win.blit(self.invulnerable, (self.x, self.y))
         else:
@@ -379,7 +397,7 @@ class Lani(Dragon):    #fireball drag
     chilling = [l1,l1,l1,l1,l1,l1,l2,l3,l3,l3,l2,]
     #11frames
     def __init__(self, row, col, width, height, cost):
-        self.hp = 15
+        self.hp = 10
         self.iceballs = []
         self.lastAttackTime = 0
         self.animationCount = 0
@@ -393,23 +411,17 @@ class Lani(Dragon):    #fireball drag
             self.lastAttackTime = int((time.time() - level.startTime))
             return self.iceballs[0]
 
-    def draw(self, win, level):
+    def draw(self, win):
         if self.skill:
             win.blit(self.l3, (self.x, self.y))
+            return
+        if self.attacking == False:
+            win.blit(self.l1, (self.x, self.y))
             return
         if self.timeTicker > 0 and self.timeTicker < 4:   # attack anim
             win.blit(self.l1, (self.x, self.y))
         else:
             win.blit(self.l3, (self.x, self.y))
-
-        # if self.animationCount + 1 >= 330:    #x*numSprites, x is how many times a frame is played
-        #     self.animationCount = 0
-        # if self.skill:
-        #     win.blit(self.chilling[8], (self.x, self.y))
-        # else:
-        #     win.blit(self.chilling[self.animationCount // 30], (self.x, self.y)) #x
-        # self.animationCount = self.animationCount + 1
-        # self.animationCount += 1
         for iceball in self.iceballs:
             iceball.draw(win)
 
@@ -426,15 +438,15 @@ class Lani(Dragon):    #fireball drag
     def skillUp(self, level):
         if self.skill and self.skillStart == -1:
             self.skillStart = time.time()
-            for shroom in level.listShroom:   #not freezing the ones attacking lani
+            for shroom in level.listShroom:
                 shroom.vel = 0
                 shroom.frozen = True
-        elif int((time.time() - self.skillStart)) > 3 and self.skill:     #3sec board freeze
+        elif int((time.time() - self.skillStart)) > 5 and self.skill:     #3sec board freeze
             self.skill = False
             self.skillStart = -1
             for shroom in level.listShroom:
                 if isinstance(shroom, ninjaShroom):
-                    shroom.vel = 0     #this might make all the mushrooms pacifist
+                    shroom.vel = 0
                 else:
                     shroom.vel = -0.25
                 shroom.frozen = False

@@ -116,7 +116,6 @@ class Player:
     def buff(self, x, y, level):
         row, col = self.rowCol(x,y)
         buffDrag = self.contains(row, col)
-        print(buffDrag)
         if(buffDrag != None and buffDrag.skill == False and isinstance(buffDrag, dragon.Kaboomo) == False):
             buffDrag.skill = True
         else:

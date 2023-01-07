@@ -68,8 +68,8 @@ while running:
     if gameState == GameState.TITLE:
         screen.blit(titleBg, (0, 0))
         level1 = level.Level(1, 10, 60, 5)    #level, mush, time, specialShrooms
-        level2 = level.Level(1, 20, 90, 8)    #level, mush, time
-        level3 = level.Level(1, 45, 120, 12)    #level, mush, time
+        level2 = level.Level(1, 17, 90, 8)    #level, mush, time
+        level3 = level.Level(1, 25, 120, 10)    #level, mush, time
 
         allLv = [level1, level2, level3]
         lvIndex = 0
@@ -170,7 +170,7 @@ while running:
         else:
             screen.blit(levelBg, (0, 0))
             #buttons and display
-            pauseButton = Buttons.textButton(                       #change to restart later
+            pauseButton = Buttons.textButton(
                 center_position= (600, 45),
                 font_size=30,
                 bg_rgb=levelBgColor,
@@ -267,7 +267,7 @@ while running:
                 shroomTarget = dragon.attackChecker(allLv[lvIndex])
                 dragon.attack(allLv[lvIndex], shroomTarget) # attackpart idk
                 dragon.skillUp(allLv[lvIndex])
-                dragon.draw(screen, allLv[lvIndex])
+                dragon.draw(screen)
 
             for button in levelButtons:
                 button.draw(screen)
