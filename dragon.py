@@ -145,13 +145,13 @@ class RedLaser(Laser):
             self.lastAttackTime = int((time.time() - self.startTime))
 
     def draw(self, win):
-        if self.animationCount + 1 >= 40:    #x*numSprites, x is how many times a frame is played
+        if self.animationCount + 1 >= 24:    #x*numSprites, x is how many times a frame is played
             self.animationCount = 0
         if self.row == 0:
-            win.blit(self.redLaserAnimationr0[self.animationCount // 10], (self.x, self.y - 90)) #x
+            win.blit(self.redLaserAnimationr0[self.animationCount // 6], (self.x, self.y - 90)) #x
         else:
-            win.blit(self.redLaserAnimation[self.animationCount // 10], (self.x, self.y - 90)) #x
-        self.animationCount = self.animationCount + 2
+            win.blit(self.redLaserAnimation[self.animationCount // 6], (self.x, self.y - 90)) #x
+        self.animationCount = self.animationCount + 1
 
 class Dragon(object):
     def __init__(self, row, col, width, height, cost):
