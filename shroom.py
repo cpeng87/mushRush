@@ -194,6 +194,7 @@ class special(Shrooms):
 class disguisedShroom(special):
     disWalkLeft = [pygame.image.load("./images/shroom/disguisedShroom1.png"), pygame.image.load("./images/shroom/disguisedShroom2.png"), pygame.image.load("./images/shroom/disguisedShroom1.png"), pygame.image.load("./images/shroom/disguisedShroom4.png")]
     disFreeze = pygame.image.load("./images/shroom/disguisedShroomFroze.png")
+    undisFreeze = pygame.image.load("./images/shroom/mushroomFroze.png")
     def __init__(self, x, y, width, height, row):
         self.disguised = True
         self.hp = 20
@@ -243,7 +244,7 @@ class disguisedShroom(special):
                 win.blit(self.mushAttack[self.attackCount // 7], (self.x - 12, self.y -35))
                 self.attackCount = self.attackCount + 1
             else:
-                win.blit(self.disFreeze, (self.x, self.y))
+                win.blit(self.undisFreeze, (self.x, self.y))
             self.walkCount += 1
 
 class ninjaShroom(special):    #it still attacks after it has been manually removed haha, need new method

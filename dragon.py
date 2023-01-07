@@ -116,8 +116,7 @@ class Laser(Projectile):
         if self.animationCount + 1 >= 60:    #x*numSprites, x is how many times a frame is played
             self.animationCount = 0
         win.blit(self.laserAnimation[self.animationCount // 15], (self.x, self.y - 10)) #x
-        self.animationCount = self.animationCount + 1
-        self.animationCount += 1
+        self.animationCount = self.animationCount + 2
 
 class RedLaser(Laser):
     r1 = pygame.image.load('./images/dragon/laserRed1.png')
@@ -139,7 +138,7 @@ class RedLaser(Laser):
         Laser.__init__(self, x, y, width, height, row, level)
 
     def laserAttack(self, shroom):
-        if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) > 5:
+        if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) >= 3:
             for otherShroom in self.level.listShroom:
                 if otherShroom.x >= self.x and otherShroom.row in self.hitRows:
                     otherShroom.loseHp()
@@ -150,11 +149,9 @@ class RedLaser(Laser):
             self.animationCount = 0
         if self.row == 0:
             win.blit(self.redLaserAnimationr0[self.animationCount // 10], (self.x, self.y - 90)) #x
-            self.animationCount = self.animationCount + 2
-            return
         else:
             win.blit(self.redLaserAnimation[self.animationCount // 10], (self.x, self.y - 90)) #x
-            self.animationCount = self.animationCount + 2
+        self.animationCount = self.animationCount + 2
 
 class Dragon(object):
     def __init__(self, row, col, width, height, cost):
@@ -286,8 +283,9 @@ class Kaboomo(Dragon):    #suicide draggo
     def attack(self, level, triggerShroom):
         if self.attacking and triggerShroom != None:
             for shroom in level.listShroom:
-                if shroom.x < self.x - 100 and self.x > triggerShroom.x + 100:
-                    shroom.hp -= 5
+                # if shroom.x < self.x - 100 and self.x > triggerShroom.x + 100:
+                if shroom.x > self.x - 20 and shroom.x < self.x + 140 and shroom.row == self.row:
+                    shroom.hp -= 100
             triggerShroom.hp = 0
 
     def attackChecker(self, level):
@@ -316,6 +314,7 @@ class Snailey(Dragon):    #lazer go brrr
         self.animationCount = 0
         self.laser = None
         self.laserStop = 0
+        self.skillStart = -1
         Dragon.__init__(self, row, col, width, height, cost)
 
     def draw(self, win):
@@ -329,15 +328,11 @@ class Snailey(Dragon):    #lazer go brrr
         if self.laser != None:
             self.laser.draw(win)
 
-    def attack(self, level, firstShroom):          #i hate this method but its fine
-        if self.laser != None and firstShroom not in level.listShroom:
+    def attack(self, level, firstShroom):
+        if self.laser != None and firstShroom not in level.listShroom and self.skillStart == -1:
             self.laser = None
             self.attacking = False
-        if self.skill:
-            if isinstance(self.laser, RedLaser) == False or self.laser == None:
-                self.laserSpawn(level)
-                self.laserStart = time.time()
-        if self.attacking:
+        elif self.attacking:
             if self.laser == None and int(time.time() - self.laserStop) > 5:    #change cd of laser
                 self.laserStart = time.time()   #fix timer
                 self.laserSpawn(level)
@@ -358,6 +353,8 @@ class Snailey(Dragon):    #lazer go brrr
         if self.skill and self.skillStart == -1:
             self.laserLength = 10
             self.skillStart = time.time()
+            self.laserSpawn(level)
+            self.laserStart = time.time()
         elif int((time.time() - self.skillStart)) > 5 and self.skill:
             self.skill = False
             self.skillStart = -1
@@ -441,7 +438,7 @@ class Lani(Dragon):    #fireball drag
             for shroom in level.listShroom:
                 shroom.vel = 0
                 shroom.frozen = True
-        elif int((time.time() - self.skillStart)) > 5 and self.skill:     #3sec board freeze
+        elif int((time.time() - self.skillStart)) >= 6 and self.skill:     #3sec board freeze
             self.skill = False
             self.skillStart = -1
             for shroom in level.listShroom:

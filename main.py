@@ -1,4 +1,5 @@
 import pygame
+import sys
 import pygame.freetype
 from pygame.locals import *
 import player
@@ -62,6 +63,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
+            sys.exit(0)
         if event.type == pygame.MOUSEBUTTONUP:
             click = True
 
@@ -381,5 +383,7 @@ while running:
 
     else:
         pygame.quit()
+        sys.exit(0)
 
     pygame.display.flip()
+    
