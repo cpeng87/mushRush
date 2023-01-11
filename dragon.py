@@ -105,11 +105,10 @@ class Laser(Projectile):
 
     def laserAttack(self, shroom):
         if shroom != None and shroom.hp > 0:
-            if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) > 3:
+            if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) >= 1:
                 for otherShroom in self.level.listShroom:
                     if otherShroom.x >= shroom.x and otherShroom.row == shroom.row:
                         otherShroom.loseHp()
-                shroom.loseHp()
                 self.lastAttackTime = int((time.time() - self.startTime))
 
     def draw(self, win):
@@ -138,11 +137,11 @@ class RedLaser(Laser):
         Laser.__init__(self, x, y, width, height, row, level)
 
     def laserAttack(self, shroom):
-        if(int(((time.time() - self.startTime)) - self.lastAttackTime) * 10) >= 3:
+        if(int(((time.time() - self.startTime) * 100) - self.lastAttackTime)) >= 50:
             for otherShroom in self.level.listShroom:
                 if otherShroom.x >= self.x and otherShroom.row in self.hitRows:
                     otherShroom.loseHp()
-            self.lastAttackTime = int((time.time() - self.startTime))
+            self.lastAttackTime = int((time.time() - self.startTime) * 100)
 
     def draw(self, win):
         if self.animationCount + 1 >= 24:    #x*numSprites, x is how many times a frame is played
@@ -153,7 +152,7 @@ class RedLaser(Laser):
             win.blit(self.redLaserAnimation[self.animationCount // 6], (self.x, self.y - 90)) #x
         self.animationCount = self.animationCount + 1
 
-class Dragon(object):
+class Dragon(object):  #change target if x is less than dragon yayaya
     def __init__(self, row, col, width, height, cost):
         self.x = colPix[col]     
         self.y = rowPix[row] 
@@ -173,7 +172,7 @@ class Dragon(object):
             rtnShroom = None
             minx = 801
             for shroom in level.listShroom:
-                if(shroom.row == self.row and shroom.x < minx):
+                if(shroom.row == self.row and shroom.x < minx and shroom.x > self.x):
                     minx = shroom.x
                     rtnShroom = shroom
             if rtnShroom != None:
@@ -203,14 +202,14 @@ class Puffs(Dragon):    #fireball drag
         self.fireballs = []
         self.lastAttackTime = 0
         self.animationCount = 0
-        self.fireballCd = 150
+        self.fireballCd = 180
         self.timeTicker = -1
         Dragon.__init__(self, row, col, width, height, cost)
     
     def fireballSpawn(self, level):
         self.timeTicker = int((time.time() - level.startTime) * 100) - self.lastAttackTime
         if self.timeTicker > self.fireballCd and self.hp > 0:       #set time delay here, change the 1
-            self.fireballs.append(Fireball(self.x + 50, self.y + 50, 25, 19, self.row))
+            self.fireballs.append(Fireball(self.x + 9, self.y + 50, 25, 19, self.row))
             self.lastAttackTime = int((time.time() - level.startTime) * 100)
             self.launching = True
             return self.fireballs[0]
@@ -333,11 +332,11 @@ class Snailey(Dragon):    #lazer go brrr
             self.laser = None
             self.attacking = False
         elif self.attacking:
-            if self.laser == None and int(time.time() - self.laserStop) > 5:    #change cd of laser
+            if self.laser == None and int(time.time() - self.laserStop) > 4:    #change cd of laser
                 self.laserStart = time.time()   #fix timer
                 self.laserSpawn(level)
             elif self.laser != None:
-                if (int((time.time() - self.laserStart)) > 2 or self.hp <= 0):   #laser duration
+                if (int((time.time() - self.laserStart)) > 3 or self.hp <= 0):   #laser duration
                     self.laser = None
                     self.laserStop = time.time()     #time when the laser stops
         if self.laser != None:
@@ -404,7 +403,7 @@ class Lani(Dragon):    #fireball drag
     def iceballSpawn(self, level):
         self.timeTicker = int((time.time() - level.startTime)) - self.lastAttackTime
         if (int((time.time() - level.startTime)) - self.lastAttackTime) > 2 and self.hp > 0:       #set time delay here, change the 1
-            self.iceballs.append(Iceball(self.x + 50, self.y + 50, 25, 19, self.row))
+            self.iceballs.append(Iceball(self.x + 0, self.y + 50, 25, 19, self.row))
             self.lastAttackTime = int((time.time() - level.startTime))
             return self.iceballs[0]
 
@@ -436,9 +435,11 @@ class Lani(Dragon):    #fireball drag
         if self.skill and self.skillStart == -1:
             self.skillStart = time.time()
             for shroom in level.listShroom:
-                shroom.vel = 0
+                if shroom.miniFreeze == True:
+                    shroom.miniFreeze = False
                 shroom.frozen = True
-        elif int((time.time() - self.skillStart)) >= 6 and self.skill:     #3sec board freeze
+                shroom.vel = 0
+        elif int((time.time() - self.skillStart)) >= 2 and self.skill:     #time board freeze
             self.skill = False
             self.skillStart = -1
             for shroom in level.listShroom:

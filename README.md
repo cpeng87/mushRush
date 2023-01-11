@@ -1,3 +1,4 @@
-# plants-v-zombies
-i like mushrooms :>
-its plants v zombies but with dragons and mushrooms
+# mushRush
+Run Mush_Rush.exe to play the game!
+
+Thank you for playing~

@@ -52,10 +52,12 @@ class Shrooms(object):
         elif self.attacking:
             win.blit(self.mushAttack[self.attackCount // 7], (self.x - 12, self.y -35))
             self.attackCount = self.attackCount + 1
+        else:
+            self.vel = -0.25
         self.walkCount += 1
 
     def move(self):
-        if self.miniFreeze == True and int((time.time() - self.freezeTime)) > 1:
+        if self.miniFreeze == True and int((time.time() - self.freezeTime) * 100) > 50:
             self.miniFreeze = False
             self.vel = -0.25
         if self.x + self.vel > self.path[1]:
@@ -230,21 +232,25 @@ class disguisedShroom(special):
         if self.attackCount + 1 >= 126:
             self.attackCount = 0
         if self.disguised:
-            if self.vel != 0:
+            if self.frozen or self.miniFreeze:
+                win.blit(self.disFreeze, (self.x, self.y))
+            elif self.vel != 0:
                 win.blit(self.disWalkLeft[self.walkCount // self.aniMultiWalk], (self.x, self.y)) #x
                 self.walkCount = self.walkCount + 1
             else:
-                win.blit(self.disFreeze, (self.x, self.y))
+                self.vel = -0.25
             self.walkCount += 1
         else:
-            if self.vel != 0:
+            if self.frozen or self.miniFreeze:
+                win.blit(self.undisFreeze, (self.x, self.y))
+            elif self.vel != 0:
                 win.blit(self.walkLeft[self.walkCount // self.aniMultiWalk], (self.x, self.y)) #x
                 self.walkCount = self.walkCount + 1
             elif self.attacking:
                 win.blit(self.mushAttack[self.attackCount // 7], (self.x - 12, self.y -35))
                 self.attackCount = self.attackCount + 1
             else:
-                win.blit(self.undisFreeze, (self.x, self.y))
+                self.vel = -0.25
             self.walkCount += 1
 
 class ninjaShroom(special):    #it still attacks after it has been manually removed haha, need new method
@@ -326,7 +332,10 @@ class ninjaShroom(special):    #it still attacks after it has been manually remo
     def attackDrag(self, dragon, level):
         if self.frozen:
             return
-        if self.target.hp == 1:
+        if self.target == None:
+            self.attacking = False
+            self.teleporting = True
+        elif self.target.hp == 1:
             self.target.loseLife()
             self.attacking = False
             self.teleporting = True
